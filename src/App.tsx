@@ -29,7 +29,7 @@ function App() {
     if (location) {
       dispatch(forecastActions.fetchForecast(location));
     }
-  }, [location]);
+  }, [dispatch, location]);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
