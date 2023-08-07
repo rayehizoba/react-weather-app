@@ -10,10 +10,7 @@ import {NoteResource} from "../lib/types";
 import Masonry from "react-masonry-css";
 import moment from "moment";
 
-interface NotesProps {
-}
-
-function Notes({}: NotesProps) {
+function Notes() {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const note = useSelector(selectNote);
