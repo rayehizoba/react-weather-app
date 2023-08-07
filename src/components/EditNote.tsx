@@ -17,8 +17,7 @@ interface EditNoteProps {
 
 function EditNote({show, onClose, note}: EditNoteProps) {
   const dispatch = useDispatch();
-  const initialFormData = {title: '', note: '',}
-  const [formData, setFormData] = useState<NoteData>(initialFormData);
+  const [formData, setFormData] = useState<NoteData>({title: '', note: '',});
 
   const [formErrors, setFormErrors] = useState<null | ValidationErrors>(null);
 
@@ -27,7 +26,7 @@ function EditNote({show, onClose, note}: EditNoteProps) {
     if (note) {
       setFormData(note);
     } else {
-      setFormData(initialFormData);
+      setFormData({title: '', note: '',});
     }
   }, [note, show]);
 

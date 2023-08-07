@@ -17,7 +17,7 @@ function Hero({forecast, location}: HeroProps) {
 
   const now = moment().tz(debouncedLocation?.timezone ?? '').startOf('hour');
   const next24Hours = moment(now).add(24, 'hours');
-  const startIndex = forecast?.hourly.time.findIndex((time, index) => {
+  const startIndex = forecast?.hourly.time.findIndex((time) => {
     const currentTime = moment(time).tz(debouncedLocation?.timezone ?? '');
     return currentTime.isSameOrAfter(now) && currentTime.isSameOrBefore(next24Hours);
   }) ?? 0;

@@ -1,4 +1,4 @@
-import React, {FormEvent, FormEventHandler, MouseEventHandler} from "react";
+import {FormEvent, FormEventHandler, MouseEventHandler} from "react";
 import {NoteData, NoteResource} from "./types";
 
 /**
@@ -251,17 +251,10 @@ export const stopPropagation = (fn: Function): MouseEventHandler<HTMLButtonEleme
 
 /**
  *
- * @param fn
- * @returns {Function}
- */
-export const changedInput = (fn: Function) => (event: React.ChangeEvent<HTMLInputElement>) => fn(event.target.value);
-
-/**
- *
  */
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0,
+    const r = Math.random() * 16 | 0,
       // eslint-disable-next-line no-mixed-operators
       v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);

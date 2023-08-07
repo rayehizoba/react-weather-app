@@ -28,7 +28,7 @@ function SideNavItem({active, peerActive, last, onClick, location}: SideNavItemP
   });
 
   const now = moment().tz(location?.timezone ?? '').startOf('hour');
-  const startIndex = forecast?.hourly.time.findIndex((time, index) => {
+  const startIndex = forecast?.hourly.time.findIndex((time) => {
     const currentTime = moment(time).tz(location?.timezone ?? '');
     return currentTime.isSameOrAfter(now);
   });
