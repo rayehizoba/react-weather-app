@@ -31,17 +31,7 @@ function SideNavItem({active, peerActive, last, onClick, location}: SideNavItemP
   const startIndex = forecast?.hourly.time.findIndex((time) => {
     const currentTime = moment(time).tz(location?.timezone ?? '');
     return currentTime.isSameOrAfter(now);
-  });
-
-  if (startIndex && startIndex >= 0) {
-    console.log(
-      location,
-      forecast?.daily.temperature_2m_max[0],
-      forecast?.daily.temperature_2m_min[0],
-      startIndex,
-      moment(forecast?.hourly.time[startIndex]).tz(location?.timezone ?? '').format("h a")
-    );
-  }
+  }) ?? 0;
 
   useEffect(() => {
     const targetElement = document.getElementById(ACTIVE_CLASS_NAME);
@@ -49,7 +39,7 @@ function SideNavItem({active, peerActive, last, onClick, location}: SideNavItemP
       targetElement.scrollIntoView({block: 'center'});
     }
   }, []);
-
+  
   return (
     <li
       onClick={onClick}
@@ -68,20 +58,20 @@ function SideNavItem({active, peerActive, last, onClick, location}: SideNavItemP
               {location?.name}
             </div>
             <div className="text-xs font-bold text-slate-500 uppercase">
-              {(startIndex && startIndex >= 0)
+              {(startIndex >= 0)
                 ? moment(forecast?.hourly.time[startIndex]).tz(location?.timezone ?? '').format("h a")
                 : '-'}
             </div>
           </div>
           <div className="text-3xl text-slate-500">
-            {(startIndex && startIndex >= 0) ? (
+            {(startIndex >= 0) ? (
               <span>{forecast?.hourly.temperature_2m[startIndex]}°</span>
             ) : '--'}
           </div>
         </div>
         <div className="flex justify-between">
           <div className="font-bold text-xs text-slate-500">
-            {(startIndex && startIndex >= 0)
+            {(startIndex >= 0)
               ? weatherCode2Str(forecast?.hourly.weathercode[startIndex])
               : '-'
             }

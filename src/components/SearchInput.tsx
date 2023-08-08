@@ -5,10 +5,12 @@ import {Menu, Transition} from "@headlessui/react";
 import Lottie from "react-lottie";
 
 interface SearchInputProps {
+  busy: boolean;
+
   onChange(location: LocationResource): void;
 }
 
-function SearchInput({onChange}: SearchInputProps) {
+function SearchInput({busy, onChange}: SearchInputProps) {
   const [fetch, setFetch] = useState<boolean>(false);
   const [value, setValue] = useState<string>("");
   const debouncedValue = useDebounce(value, 250);
@@ -69,7 +71,7 @@ function SearchInput({onChange}: SearchInputProps) {
       <div className="relative z-[5] flex-1 md:flex-none">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pointer-events-none grid place-content-center px-1.5">
-            {debouncedFetch ? (
+            {debouncedFetch || busy ? (
               <span className="w-8 opacity-25">
                   <Lottie options={{
                     loop: true,

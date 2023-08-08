@@ -1,19 +1,38 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import classNames from "classnames";
-import Card from "./Card";
+import {useDispatch, useSelector} from "react-redux";
 import {LocationResource} from "../lib/types";
 import * as locationActions from "../store/location/location.actions";
-import {useDispatch} from "react-redux";
 import SideNavItem from "./SideNavItem";
+import Card from "./Card";
+import {selectLocations} from "../store/locations/locations.selectors";
+import {selectLocation} from "../store/location/location.selectors";
+import {currentLocationResource} from "../lib/helpers";
 
 interface SideNavProps {
   className?: string,
-  location: null | LocationResource;
-  locations: LocationResource[];
 }
 
-function SideNav({className, locations, location}: SideNavProps) {
+function SideNav({className}: SideNavProps) {
   const dispatch = useDispatch();
+  const locations = useSelector(selectLocations);
+  const location = useSelector(selectLocation);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const currentLocation: LocationResource = currentLocationResource(position.coords);
+          dispatch(locationActions.setCurrentLocation(currentLocation));
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }, []);
 
   function onClick(location: LocationResource) {
     return () => {
@@ -22,7 +41,7 @@ function SideNav({className, locations, location}: SideNavProps) {
   }
 
   function renderEmptyState() {
-    return (
+    return locations.length === 0 && (
       <div className="h-full grid place-content-center">
         <div className="text-slate-400 font-medium text-center">
           Your favorite locations will appear here

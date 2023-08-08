@@ -1,5 +1,5 @@
 import {FormEvent, FormEventHandler, MouseEventHandler} from "react";
-import {NoteData, NoteResource} from "./types";
+import {LocationResource, NoteData, NoteResource} from "./types";
 
 /**
  *
@@ -220,13 +220,9 @@ export function weatherCode2Str(code?: number): null | string {
 /**
  *
  */
-export function getTimezone() {
-  try {
-    const now = new Date();
-    return now.toLocaleString('en-US', {timeZoneName: 'short'}).split(' ').pop();
-  } catch (err) {
-    return 'auto';
-  }
+export function getTimezone(): string {
+  const now = new Date();
+  return now.toLocaleString('en-US', {timeZoneName: 'short'}).split(' ').pop() ?? 'auto';
 }
 
 /**
@@ -283,4 +279,24 @@ export const createNoteResource = (noteData: NoteData): NoteResource => {
 export function areEqualFloats(a: number, b: number, precision = 2) {
   const tolerance = 10 ** (-precision);
   return Math.abs(a - b) < tolerance;
+}
+
+/**
+ *
+ * @param coords
+ */
+export function currentLocationResource(coords: GeolocationCoordinates): LocationResource {
+  return {
+    country: '',
+    country_code: '',
+    country_id: generateUUID(),
+    elevation: 0,
+    feature_code: '',
+    id: generateUUID(),
+    latitude: coords.latitude,
+    longitude: coords.longitude,
+    name: 'My Location',
+    population: 1,
+    timezone: getTimezone(),
+  }
 }

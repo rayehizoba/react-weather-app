@@ -3,49 +3,39 @@ import {useDispatch, useSelector} from "react-redux";
 import {Transition} from "@headlessui/react";
 import SearchInput from "./components/SearchInput";
 import * as forecastActions from './store/forecast/forecast.actions';
-import {selectLocation} from "./store/location/location.selectors";
+import {selectIsCurrentLocation, selectLocation} from "./store/location/location.selectors";
 import {selectForecast, selectForecastFetch} from "./store/forecast/forecast.selectors";
 import * as locationActions from "./store/location/location.actions";
-import {selectLocations} from "./store/locations/locations.selectors";
+import {selectIsFavoriteLocation} from "./store/locations/locations.selectors";
 import DailyForecast from "./components/DailyForecast";
 import FavoriteButton from "./components/FavoriteButton";
+import PageTemplate from "./components/PageTemplate";
 import {LocationResource} from "./lib/types";
 import SideNav from "./components/SideNav";
 import Notes from "./components/Notes";
 import Hero from "./components/Hero";
-import PageTemplate from "./components/PageTemplate";
+import {RootState} from "./store";
 import './App.css';
 
 function App() {
   const dispatch = useDispatch();
   const forecast = useSelector(selectForecast);
   const forecastFetch = useSelector(selectForecastFetch);
-  const locations = useSelector(selectLocations);
   const location = useSelector(selectLocation);
-  const isFavoriteLocation = locations.findIndex(item => item.id === location?.id) >= 0;
+  const isFavoriteLocation = useSelector((state: RootState) => {
+    if (location) return selectIsFavoriteLocation(state, location.id);
+    return false;
+  });
+  const isCurrentLocation = useSelector((state: RootState) => {
+    if (location) return selectIsCurrentLocation(state, location.id);
+    return false;
+  });
 
   useEffect(() => {
     if (location) {
       dispatch(forecastActions.fetchForecast(location));
     }
   }, [dispatch, location]);
-
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          console.log(`Latitude: ${lat}, longitude: ${lng}`);
-        },
-        (error) => {
-          console.error("Error getting user location:", error);
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
-  }, []);
 
   function onChangeLocation(location: LocationResource) {
     dispatch(locationActions.setLocation(location));
@@ -64,14 +54,14 @@ function App() {
     <PageTemplate
       renderHeader={(onToggleSidenav) => (
         <header className="flex items-stretch justify-end space-x-2.5">
-          {location && (
+          {location && !isCurrentLocation && (
             <FavoriteButton
               onClick={onClickAdd}
               busy={forecastFetch}
               active={isFavoriteLocation}
             />
           )}
-          <SearchInput onChange={onChangeLocation}/>
+          <SearchInput onChange={onChangeLocation} busy={forecastFetch}/>
           <button
             type='button'
             onClick={onToggleSidenav}
@@ -81,11 +71,7 @@ function App() {
           </button>
         </header>
       )}
-      renderSidenav={() => <SideNav
-        className='w-64 shadow-xl lg:shadow-none'
-        locations={locations}
-        location={location}
-      />}
+      renderSidenav={() => <SideNav className='w-64 shadow-xl lg:shadow-none'/>}
     >
       {location && (
         <Transition

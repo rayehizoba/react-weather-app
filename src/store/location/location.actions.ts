@@ -1,5 +1,5 @@
 import {types} from "./location.reducer";
-import {ActionType, LocationResource} from "../../lib/types";
+import {ActionType, ID, LocationResource} from "../../lib/types";
 import {Dispatch} from "redux";
 
 /**
@@ -11,6 +11,16 @@ export const setLocation = (data: LocationResource): any => {
     dispatch({type: types.SET_LOCATION, data});
   }
 };
+
+/**
+ *
+ * @param data
+ */
+export const setCurrentLocation = (data: LocationResource): any => {
+  return (dispatch: Dispatch<ActionType<LocationResource>>) => {
+    dispatch({type: types.CURRENT_LOCATION, data});
+  }
+}
 
 /**
  *
@@ -26,8 +36,8 @@ export const saveLocation = (data: LocationResource): any => {
  *
  * @returns {Function}
  */
-export const removeLocation = (id: number): any => {
-  return (dispatch: Dispatch<ActionType<number>>) => {
+export const removeLocation = (id: ID): any => {
+  return (dispatch: Dispatch<ActionType<ID>>) => {
     dispatch({type: types.REMOVE_LOCATION, data: id});
   }
 };

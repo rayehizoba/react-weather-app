@@ -1,11 +1,13 @@
+export type ID = number | string;
+
 export interface LocationResource {
   admin1?: string;
   country: string;
   country_code: string;
-  country_id: number;
+  country_id: ID;
   elevation: number;
   feature_code: string;
-  id: number;
+  id: ID;
   latitude: number;
   longitude: number;
   name: string;
@@ -72,7 +74,7 @@ export interface NoteData {
 }
 
 export interface NoteResource extends NoteData {
-  id: number | string;
+  id: ID;
   created_at: number;
   updated_at: number;
 }
