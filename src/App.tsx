@@ -17,6 +17,7 @@ import Notes from "./components/Notes";
 import Hero from "./components/Hero";
 import {RootState} from "./store";
 import './App.css';
+import classNames from "classnames";
 
 function App() {
   const dispatch = useDispatch();
@@ -54,8 +55,8 @@ function App() {
 
   return (
     <PageTemplate
-      renderHeader={(onToggleSidenav) => (
-        <header className="flex items-stretch justify-end space-x-2.5">
+      renderHeader={({onToggleSidenav, showSidenav}) => (
+        <header className="flex items-stretch justify-end space-x-2.5 relative">
           {location && !isCurrentLocation && (
             <FavoriteButton
               onClick={onClickAdd}
@@ -67,9 +68,12 @@ function App() {
           <button
             type='button'
             onClick={onToggleSidenav}
-            className='lg:hidden'
+            className='lg:hidden z-10'
           >
-            <i className="mdi mdi-menu text-3xl text-sky-300/50"></i>
+            <i className={classNames(
+              "mdi text-3xl text-sky-300/50",
+              showSidenav ? 'mdi-close' : 'mdi-menu'
+            )}></i>
           </button>
         </header>
       )}

@@ -68,7 +68,7 @@ function SearchInput({busy, onChange}: SearchInputProps) {
 
   return (
     <Menu ref={modalRef}>
-      <div className="relative z-[5] flex-1 md:flex-none">
+      <div className="sm:relative z-[5] flex-1 md:flex-none">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pointer-events-none grid place-content-center px-1.5">
             {debouncedFetch || busy ? (
@@ -105,7 +105,7 @@ function SearchInput({busy, onChange}: SearchInputProps) {
           leaveTo="transform opacity-0 scale-95"
         >
           <div
-            className="max-h-[24rem] overflow-y-auto origin-top-right absolute right-0 top-100 mt-1 bg-slate-700 min-w-[15rem] max-w-sm sm:max-w-lg lg:max-w-xl rounded-2xl overflow-hidden shadow-xl">
+            className="max-h-[24rem] overflow-y-auto origin-top-right absolute left-0 sm:left-auto right-0 top-100 mt-1 bg-slate-700 sm:min-w-[15rem] sm:max-w-lg lg:max-w-xl rounded-2xl overflow-hidden shadow-xl">
             <Menu.Items
               static
               className="p-1 focus:outline-none flex flex-col">
