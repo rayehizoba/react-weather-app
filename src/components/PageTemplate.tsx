@@ -23,7 +23,7 @@ function PageTemplate({children, renderHeader, renderSidenav}: PageTemplateProps
     <div className="flex bg-slate-900 h-screen">
       <nav
         className={classNames(
-          "fixed inset-y-0 z-20 lg:relative p-4 md:p-8 pr-0 transform transition ease-out duration-300",
+          "fixed inset-y-0 z-20 lg:relative p-4 md:p-8 md:pr-0 transform transition ease-out duration-300",
           showSidenav ? '' : '-translate-x-64 lg:translate-x-0 -ml-8 lg:ml-0 opacity-0 lg:opacity-100'
         )}
       >
