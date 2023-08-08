@@ -15,7 +15,7 @@ interface HeroProps {
 function Hero({forecast, location}: HeroProps) {
   const debouncedLocation = useDebounce(location, 150);
 
-  const now = moment().tz(debouncedLocation?.timezone ?? '').startOf('hour');
+  const now = (debouncedLocation ? moment().tz(debouncedLocation?.timezone) : moment()).startOf('hour');
   const next24Hours = moment(now).add(24, 'hours');
   const startIndex = forecast?.hourly.time.findIndex((time) => {
     const currentTime = moment(time).tz(debouncedLocation?.timezone ?? '');

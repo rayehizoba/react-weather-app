@@ -21,6 +21,16 @@ function SideNav({className, locations, location}: SideNavProps) {
     }
   }
 
+  function renderEmptyState() {
+    return (
+      <div className="h-full grid place-content-center">
+        <div className="text-slate-400 font-medium text-center">
+          Your favorite locations will appear here
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={classNames("bg-slate-900 h-full rounded-3xl", className)}>
       <Card className='p-3 overflow-y-auto h-full bg-slate-600/25 lg:bg-slate-600/50'>
@@ -36,6 +46,7 @@ function SideNav({className, locations, location}: SideNavProps) {
             />
           ))}
         </ul>
+        {renderEmptyState()}
       </Card>
     </div>
   );
