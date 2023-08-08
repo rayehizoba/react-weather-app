@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
-import {useDispatch, useSelector} from "react-redux";
 import {Transition} from "@headlessui/react";
+import {useDebounce} from "@reactuses/core";
+import {useDispatch, useSelector} from "react-redux";
 import SearchInput from "./components/SearchInput";
 import * as forecastActions from './store/forecast/forecast.actions';
 import {selectIsCurrentLocation, selectLocation} from "./store/location/location.selectors";
@@ -22,6 +23,7 @@ function App() {
   const forecast = useSelector(selectForecast);
   const forecastFetch = useSelector(selectForecastFetch);
   const location = useSelector(selectLocation);
+  const debouncedLocation = useDebounce(location, 150);
   const isFavoriteLocation = useSelector((state: RootState) => {
     if (location) return selectIsFavoriteLocation(state, location.id);
     return false;
@@ -73,7 +75,7 @@ function App() {
       )}
       renderSidenav={() => <SideNav className='w-64 shadow-xl lg:shadow-none'/>}
     >
-      {location && (
+      {debouncedLocation && (
         <Transition
           show={!forecastFetch}
           className='space-y-5'
@@ -84,10 +86,10 @@ function App() {
           leaveFrom="opacity-100 scale-100 "
           leaveTo="opacity-0 scale-95 "
         >
-          <Hero forecast={forecast} location={location}/>
+          <Hero forecast={forecast} location={debouncedLocation}/>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5 items-start">
             <div className="lg:col-span-2 md:sticky md:top-0 space-y-5">
-              <DailyForecast forecast={forecast} location={location}/>
+              <DailyForecast forecast={forecast} location={debouncedLocation}/>
             </div>
             <div className="lg:col-span-3">
               <Notes/>

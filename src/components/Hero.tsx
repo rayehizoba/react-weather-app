@@ -2,7 +2,6 @@ import React from 'react';
 import Lottie from "react-lottie";
 import moment from "moment-timezone";
 import classNames from "classnames";
-import {useDebounce} from "@reactuses/core";
 import {ForecastResource, LocationResource} from "../lib/types";
 import {weatherCode2LottieJSON, weatherCode2MDI, weatherCode2Str} from "../lib/helpers";
 import Card from "./Card";
@@ -13,16 +12,14 @@ interface HeroProps {
 }
 
 function Hero({forecast, location}: HeroProps) {
-  const debouncedLocation = useDebounce(location, 150);
-
-  const now = (debouncedLocation ? moment().tz(debouncedLocation?.timezone) : moment()).startOf('hour');
+  const now = (location ? moment().tz(location?.timezone) : moment()).startOf('hour');
   const next24Hours = moment(now).add(24, 'hours');
   const startIndex = forecast?.hourly.time.findIndex((time) => {
-    const currentTime = moment(time).tz(debouncedLocation?.timezone ?? '');
+    const currentTime = moment(time).tz(location?.timezone ?? '');
     return currentTime.isSameOrAfter(now) && currentTime.isSameOrBefore(next24Hours);
   }) ?? 0;
   const endIndex = forecast?.hourly.time.findIndex((time) => {
-    const currentTime = moment(time).tz(debouncedLocation?.timezone ?? '');
+    const currentTime = moment(time).tz(location?.timezone ?? '');
     return currentTime.isAfter(next24Hours);
   }) ?? startIndex;
   const indicesList = [];
@@ -51,7 +48,7 @@ function Hero({forecast, location}: HeroProps) {
           </figure>
           <div className="space-y-1 p-3 xl:p-5">
             <div className="transition-all text-4xl xl:text-5xl tracking-tight break-all">
-              {debouncedLocation?.name}
+              {location?.name}
             </div>
             <div className="transition-all text-sm xl:text-base text-slate-500 font-medium capitalize">
               {startIndex >= 0 && (
@@ -104,7 +101,7 @@ function Hero({forecast, location}: HeroProps) {
               <div className="text-xs whitespace-nowrap">
                 {index === startIndex
                   ? 'Now'
-                  : moment(forecast?.hourly.time[index]).tz(debouncedLocation?.timezone ?? '').format("h a")
+                  : moment(forecast?.hourly.time[index]).tz(location?.timezone ?? '').format("h a")
                 }
               </div>
               <i className={classNames(
