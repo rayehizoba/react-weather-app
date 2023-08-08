@@ -33,7 +33,7 @@ function PageTemplate({children, renderHeader, renderSidenav}: PageTemplateProps
         )}
       ></div>
 
-      <div className="flex-1 overflow-y-auto p-8 ">
+      <div className="flex-1 overflow-y-auto p-4 md:p-8">
         <div className="max-w-5xl mx-auto space-y-5">
           {renderHeader(onToggleSidenav)}
           {children}
