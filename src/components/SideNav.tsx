@@ -32,7 +32,7 @@ function SideNav({className}: SideNavProps) {
     } else {
       console.error("Geolocation is not supported by this browser.");
     }
-  }, []);
+  }, [dispatch]);
 
   function onClick(location: LocationResource) {
     return () => {
