@@ -292,7 +292,7 @@ export function currentLocationResource(coords: GeolocationCoordinates): Locatio
     country_id: generateUUID(),
     elevation: 0,
     feature_code: '',
-    id: generateUUID(),
+    id: "CURRENT_LOCATION",
     latitude: coords.latitude,
     longitude: coords.longitude,
     name: 'My Location',
