@@ -1,13 +1,16 @@
 import React, {useEffect} from 'react';
-import classNames from "classnames";
 import {useDispatch, useSelector} from "react-redux";
+import {usePrevious} from "@reactuses/core";
+import classNames from "classnames";
 import {LocationResource} from "../lib/types";
 import * as locationActions from "../store/location/location.actions";
-import SideNavItem from "./SideNavItem";
-import Card from "./Card";
-import {selectLocations} from "../store/locations/locations.selectors";
+import * as locationsActions from "../store/locations/locations.actions";
+import * as forecastActions from "../store/forecast/forecast.actions";
+import {selectFetch, selectFetchSuccess, selectLocations} from "../store/locations/locations.selectors";
 import {selectLocation} from "../store/location/location.selectors";
 import {currentLocationResource} from "../lib/helpers";
+import SideNavItem from "./SideNavItem";
+import Card from "./Card";
 
 interface SideNavProps {
   className?: string,
@@ -17,6 +20,9 @@ function SideNav({className}: SideNavProps) {
   const dispatch = useDispatch();
   const locations = useSelector(selectLocations);
   const location = useSelector(selectLocation);
+  const fetch = useSelector(selectFetch);
+  const prevFetch = usePrevious(fetch);
+  const fetchSuccess = useSelector(selectFetchSuccess);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -33,6 +39,20 @@ function SideNav({className}: SideNavProps) {
       console.error("Geolocation is not supported by this browser.");
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!fetchSuccess) {
+      dispatch(locationsActions.fetchLargestCities());
+    }
+  }, [dispatch, fetchSuccess]);
+
+  useEffect(() => {
+    if (prevFetch && !fetch && fetchSuccess) {
+      locations.forEach(location => {
+        dispatch(forecastActions.fetchForecast(location));
+      });
+    }
+  }, [dispatch, fetch, fetchSuccess, locations, prevFetch]);
 
   function onClick(location: LocationResource) {
     return () => {

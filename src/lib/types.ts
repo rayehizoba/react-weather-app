@@ -5,7 +5,7 @@ export interface LocationResource {
   country: string;
   country_code: string;
   country_id: ID;
-  elevation: number;
+  elevation?: number;
   feature_code: string;
   id: ID;
   latitude: number;
@@ -77,4 +77,22 @@ export interface NoteResource extends NoteData {
   id: ID;
   created_at: number;
   updated_at: number;
+}
+
+export interface GeoNamesResource {
+  recordid: string;
+  fields: {
+    coordinates: number[];
+    cou_name_en: string;
+    country_code: string;
+    geoname_id: string;
+    feature_code: string;
+    name: string;
+    population: number;
+    timezone: string;
+  }
+}
+
+export interface GeoNamesResponseData {
+  records: GeoNamesResource[],
 }

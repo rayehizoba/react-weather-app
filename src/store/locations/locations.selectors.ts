@@ -13,6 +13,10 @@ export const selectLocations = (state: RootState): LocationResource[] => {
   );
 }
 
+export const selectFetch = (state: RootState) => state.locations.fetch;
+export const selectFetchError = (state: RootState) => state.locations.fetchError;
+export const selectFetchSuccess = (state: RootState) => state.locations.fetchSuccess;
+
 export const selectIsFavoriteLocation = (state: RootState, id: ID) => {
   return state.locations.collection.findIndex(location => location.id === id) >= 0;
 }
