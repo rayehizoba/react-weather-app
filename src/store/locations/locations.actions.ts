@@ -1,6 +1,6 @@
 import {Action, Dispatch} from "redux";
-import {GeoNamesResource, GeoNamesResponseData, LocationResource} from "../../lib/types";
-import {objectToURLQuery} from "../../lib/helpers";
+import {GeoNamesResponseData} from "../../lib/types";
+import {geoNames2Location, objectToURLQuery} from "../../lib/helpers";
 import {types} from "./locations.reducer";
 
 export const fetchLargestCities = (): any => {
@@ -23,18 +23,7 @@ export const fetchLargestCities = (): any => {
       .then((data: GeoNamesResponseData) => {
         dispatch({
           type: types.FETCH_FULFILLED,
-          data: data.records.map((record: GeoNamesResource): LocationResource => ({
-            country: record.fields.cou_name_en,
-            country_code: record.fields.country_code,
-            country_id: record.fields.geoname_id,
-            feature_code: record.fields.feature_code,
-            id: record.recordid,
-            latitude: record.fields.coordinates[0],
-            longitude: record.fields.coordinates[1],
-            name: record.fields.name,
-            population: record.fields.population,
-            timezone: record.fields.timezone,
-          }))
+          data: data.records.map(geoNames2Location)
         });
       })
       .catch((error) => {

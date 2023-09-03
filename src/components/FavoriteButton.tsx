@@ -3,7 +3,7 @@ import classNames from "classnames";
 
 interface FavoriteButtonProps {
   active: boolean;
-  busy: boolean;
+  busy?: boolean;
 
   onClick(): void;
 }
@@ -13,13 +13,10 @@ function FavoriteButton({active, busy, onClick}: FavoriteButtonProps) {
     <button
       type='button'
       onClick={onClick}
-      className={classNames(
-        'btn-primary',
-        busy ? 'opacity-50' : ''
-      )}
+      className={classNames('btn-primary', busy ? 'opacity-50' : '')}
       disabled={busy}
     >
-      <i className={classNames(
+      <i data-testid={'star-icon'} className={classNames(
         "mdi text-3xl",
         active ? 'mdi-star text-sky-300/50' : 'mdi-star-outline text-slate-400'
       )}></i>

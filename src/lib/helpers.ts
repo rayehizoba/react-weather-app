@@ -1,5 +1,13 @@
 import {FormEvent, FormEventHandler, MouseEventHandler} from "react";
-import {LocationResource, NoteData, NoteResource} from "./types";
+import {
+  GeoNamesResource,
+  HourlyData,
+  LocationResource,
+  NoteData,
+  NoteResource,
+  WeatherData
+} from "./types";
+import moment from "moment-timezone";
 
 /**
  *
@@ -19,7 +27,7 @@ export function objectToURLQuery(params: { [key: string]: any } = {}): string {
  *
  * @param code
  */
-export function weatherCode2MDI(code?: number): null | string {
+export function weatherCode2MDI(code: number): string {
   switch (code) {
     case 0:
       // Clear sky
@@ -89,7 +97,7 @@ export function weatherCode2MDI(code?: number): null | string {
       return 'mdi-weather-hail';
 
     default:
-      return null;
+      return '';
   }
 }
 
@@ -156,7 +164,7 @@ export function weatherCode2LottieJSON(code?: number): string {
  *
  * @param code
  */
-export function weatherCode2Str(code?: number): null | string {
+export function weatherCode2Str(code?: number): string {
   switch (code) {
     case 0:
       return 'Clear sky';
@@ -213,7 +221,7 @@ export function weatherCode2Str(code?: number): null | string {
       return 'Thunderstorm with hail';
 
     default:
-      return null;
+      return '';
   }
 }
 
@@ -248,7 +256,7 @@ export const stopPropagation = (fn: Function): MouseEventHandler<HTMLButtonEleme
 /**
  *
  */
-function generateUUID() {
+export function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = Math.random() * 16 | 0,
       // eslint-disable-next-line no-mixed-operators
@@ -276,8 +284,8 @@ export const createNoteResource = (noteData: NoteData): NoteResource => {
  * @param b
  * @param precision
  */
-export function areEqualFloats(a: number, b: number, precision = 2) {
-  const tolerance = 10 ** (-precision);
+export function areEqualFloats(a: number, b: number, precision: number = 2): boolean {
+  const tolerance: number = 10 ** (-precision) / 2;
   return Math.abs(a - b) < tolerance;
 }
 
@@ -299,4 +307,80 @@ export function currentLocationResource(coords: GeolocationCoordinates): Locatio
     population: 1,
     timezone: getTimezone(),
   }
+}
+
+/**
+ *
+ * @param time
+ * @param timezone
+ * @param showNow
+ */
+export function formatHourlyTime(time: string, timezone = 'GMT', showNow: boolean = true) {
+  const currentTime = moment().tz(timezone);
+  const timeMoment = moment(time).tz(timezone);
+
+  if (showNow && timeMoment.isSame(currentTime, 'hour')) {
+    return 'Now';
+  }
+
+  return timeMoment.format('h a');
+}
+
+/**
+ *
+ * @param time
+ * @param timezone
+ */
+export function formatDailyTime(time: string, timezone = 'GMT') {
+  const currentTime = moment().tz(timezone);
+  const timeMoment = moment(time).tz(timezone);
+
+  if (timeMoment.isSame(currentTime, 'day')) {
+    return 'Today';
+  }
+
+  return timeMoment.format("ddd");
+}
+
+/**
+ *
+ * @param data
+ * @param timezone
+ */
+export function getTodayWeatherData(data: HourlyData, timezone = 'GMT'): WeatherData[] {
+  const today = moment().tz(timezone).startOf('hour');
+  const tomorrow = moment().tz(timezone).add(24, 'hours');
+
+  return data.time.reduce((acc: WeatherData[], time: string, index: number) => {
+    const timeMoment = moment(time).tz(timezone);
+    if (timeMoment.isSameOrAfter(today, 'hour') && timeMoment.isSameOrBefore(tomorrow, 'hour')) {
+      acc.push({
+        time,
+        temperature_2m: data.temperature_2m[index],
+        weathercode: data.weathercode[index],
+        windspeed_10m: data.windspeed_10m[index],
+        relativehumidity_2m: data.relativehumidity_2m[index]
+      });
+    }
+    return acc;
+  }, []);
+}
+
+/**
+ *
+ * @param record
+ */
+export function geoNames2Location(record: GeoNamesResource): LocationResource {
+  return {
+    country: record.fields.cou_name_en,
+    country_code: record.fields.country_code,
+    country_id: record.fields.geoname_id,
+    feature_code: record.fields.feature_code,
+    id: record.recordid,
+    latitude: record.fields.coordinates[0],
+    longitude: record.fields.coordinates[1],
+    name: record.fields.name,
+    population: record.fields.population,
+    timezone: record.fields.timezone,
+  };
 }

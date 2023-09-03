@@ -1,5 +1,4 @@
 import {ForecastResource} from "../../lib/types";
-import {types as appTypes, Action as AppAction} from '../app/app.reducer';
 
 export const types = {
   FETCH_START: "FORECAST/FETCH_START",
@@ -23,8 +22,7 @@ const initialState: ForeCastState = {
 
 export type Action = { type: typeof types.FETCH_START }
   | { type: typeof types.FETCH_FULFILLED, data: ForecastResource }
-  | { type: typeof types.FETCH_REJECTED, data: Error }
-  | AppAction;
+  | { type: typeof types.FETCH_REJECTED, data: Error };
 
 export default function reducer(state: ForeCastState = initialState, action: Action): ForeCastState {
   switch (action.type) {
@@ -53,11 +51,6 @@ export default function reducer(state: ForeCastState = initialState, action: Act
         fetch: false,
         fetchError: action.data,
         fetchSuccess: false,
-      };
-
-    case appTypes.CLEAR_ERRORS:
-      return {
-        ...initialState,
       };
   }
 }

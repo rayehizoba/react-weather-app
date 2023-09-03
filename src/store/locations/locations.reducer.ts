@@ -70,11 +70,12 @@ export default function reducer(state: LocationsState = initialState, action: Ac
       }
     }
 
-    case locationTypes.REMOVE_LOCATION:
+    case locationTypes.REMOVE_LOCATION: {
       return {
         ...state,
         collection: state.collection.filter(location => location.id !== action.data),
       };
+    }
 
     default:
       return state;

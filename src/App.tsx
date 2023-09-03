@@ -1,102 +1,109 @@
-import React, {useEffect} from 'react';
+import React from 'react';
+import classNames from "classnames";
 import {Transition} from "@headlessui/react";
 import {useDebounce} from "@reactuses/core";
-import {useDispatch, useSelector} from "react-redux";
 import SearchInput from "./components/SearchInput";
-import * as forecastActions from './store/forecast/forecast.actions';
-import {selectIsCurrentLocation, selectLocation} from "./store/location/location.selectors";
-import {selectForecast, selectForecastFetch} from "./store/forecast/forecast.selectors";
-import * as locationActions from "./store/location/location.actions";
-import {selectIsFavoriteLocation} from "./store/locations/locations.selectors";
 import DailyForecast from "./components/DailyForecast";
 import FavoriteButton from "./components/FavoriteButton";
-import PageTemplate from "./components/PageTemplate";
+import PageTemplate, {PageTemplateHeaderProps} from "./components/PageTemplate";
 import {LocationResource} from "./lib/types";
-import SideNav from "./components/SideNav";
-import Notes from "./components/Notes";
-import Hero from "./components/Hero";
-import {RootState} from "./store";
+import FavoritesList from "./components/FavoritesList";
+import NotesList from "./components/NotesList";
+import CurrentForecast from "./components/CurrentForecast";
+// import ApiError from "./components/ApiError";
+import useForecast from "./hooks/useForecast";
+import useLocations from "./hooks/useLocations";
+import useForecasts from "./hooks/useForecasts";
+import useLocation from "./hooks/useLocation";
+import NoteEditor from "./components/NoteEditor";
+import useNotes from "./hooks/useNotes";
+import useNote from "./hooks/useNote";
 import './App.css';
-import classNames from "classnames";
 
 function App() {
-  const dispatch = useDispatch();
-  const forecast = useSelector(selectForecast);
-  const forecastFetch = useSelector(selectForecastFetch);
-  const location = useSelector(selectLocation);
-  const debouncedLocation = useDebounce(location, 150);
-  const isFavoriteLocation = useSelector((state: RootState) => {
-    if (location) return selectIsFavoriteLocation(state, location.id);
-    return false;
-  });
-  const isCurrentLocation = useSelector((state: RootState) => {
-    if (location) return selectIsCurrentLocation(state, location.id);
-    return false;
-  });
+  const {notes} = useNotes();
+  const {
+    note, isEditingNote, handleNewNote, handleEditNote,
+    handleDeleteNote, setIsEditingNote, handleSubmitNote
+  } = useNote();
 
-  useEffect(() => {
-    if (location) {
-      dispatch(forecastActions.fetchForecast(location));
-    }
-  }, [dispatch, location]);
+  const {locations, isLoadingLocations} = useLocations();
+  const {location, setLocation, isCurrentLocation, isFavoriteLocation, toggleFavoriteLocation} = useLocation();
+  const debouncedLocation = useDebounce(location, 150);
+
+  const {forecasts} = useForecasts(locations);
+  const {forecast, isLoadingForecast,} = useForecast(location);
+
+  const isLoading = isLoadingForecast || isLoadingLocations;
+  // const error = forecastFetchError ?? locationsFetchError;
 
   function onChangeLocation(location: LocationResource) {
-    dispatch(locationActions.setLocation(location));
+    setLocation && setLocation(location);
   }
 
-  function onClickAdd() {
-    if (location) {
-      dispatch(isFavoriteLocation
-        ? locationActions.removeLocation(location.id)
-        : locationActions.saveLocation(location)
-      );
-    }
+  function renderHeader({onToggleSidenav, showSidenav}: PageTemplateHeaderProps) {
+    return (
+      <header className="flex items-stretch justify-end space-x-2.5 relative">
+        {/*{error && <ApiError error={error}/>}*/}
+        {location && !isCurrentLocation && (
+          <FavoriteButton
+            onClick={toggleFavoriteLocation}
+            active={isFavoriteLocation}
+            busy={isLoadingForecast}
+          />
+        )}
+        <SearchInput onChange={onChangeLocation} busy={isLoading}/>
+        <button type='button' onClick={onToggleSidenav} className='lg:hidden z-10'>
+          <i className={classNames("mdi text-3xl text-sky-300/50", showSidenav ? 'mdi-close' : 'mdi-menu')}></i>
+        </button>
+      </header>
+    );
+  }
+
+  function renderSidenav() {
+    return (
+      <FavoritesList
+        location={location}
+        locations={locations}
+        forecasts={forecasts}
+        isLoading={isLoadingLocations}
+        onClickLocation={(location: LocationResource) => setLocation && setLocation(location)}
+        className='w-64 shadow-xl lg:shadow-none'
+      />
+    );
   }
 
   return (
-    <PageTemplate
-      renderHeader={({onToggleSidenav, showSidenav}) => (
-        <header className="flex items-stretch justify-end space-x-2.5 relative">
-          {location && !isCurrentLocation && (
-            <FavoriteButton
-              onClick={onClickAdd}
-              busy={forecastFetch}
-              active={isFavoriteLocation}
-            />
-          )}
-          <SearchInput onChange={onChangeLocation} busy={forecastFetch}/>
-          <button
-            type='button'
-            onClick={onToggleSidenav}
-            className='lg:hidden z-10'
-          >
-            <i className={classNames(
-              "mdi text-3xl text-sky-300/50",
-              showSidenav ? 'mdi-close' : 'mdi-menu'
-            )}></i>
-          </button>
-        </header>
-      )}
-      renderSidenav={() => <SideNav className='w-64 shadow-xl lg:shadow-none'/>}
-    >
-      {debouncedLocation && (
+    <PageTemplate renderHeader={renderHeader} renderSidenav={renderSidenav}>
+      {debouncedLocation && forecast && (
         <Transition
-          show={!forecastFetch}
-          className='space-y-5'
+          show={!isLoadingForecast}
           enter="transform transition duration-200"
           enterFrom="opacity-0 scale-95"
           enterTo="opacity-100 scale-100"
           leave="transform duration-200 transition ease-in-out"
-          leaveFrom="opacity-100 scale-100 "
-          leaveTo="opacity-0 scale-95 "
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
+          className='space-y-5'
         >
-          <Hero forecast={forecast} location={debouncedLocation}/>
+          <CurrentForecast forecast={forecast} location={debouncedLocation}/>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5 items-start">
             <div className="lg:col-span-2 md:sticky md:top-0 space-y-5">
               <DailyForecast forecast={forecast} location={debouncedLocation}/>
             </div>
             <div className="lg:col-span-3">
-              <Notes/>
+              <NoteEditor
+                note={note}
+                show={isEditingNote}
+                onSubmit={handleSubmitNote}
+                onClose={() => setIsEditingNote(false)}
+              />
+              <NotesList
+                notes={notes}
+                onClickNew={handleNewNote}
+                onClickEdit={handleEditNote}
+                onClickDelete={handleDeleteNote}
+              />
             </div>
           </div>
         </Transition>

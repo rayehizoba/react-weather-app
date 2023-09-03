@@ -24,7 +24,7 @@ export type ActionType<T> = {
   data?: T;
 };
 
-interface HourlyData {
+export interface HourlyData {
   relativehumidity_2m: number[];
   temperature_2m: number[];
   time: string[];
@@ -95,4 +95,12 @@ export interface GeoNamesResource {
 
 export interface GeoNamesResponseData {
   records: GeoNamesResource[],
+}
+
+export interface WeatherData {
+  time: string;
+  temperature_2m: number;
+  weathercode: number;
+  windspeed_10m: number;
+  relativehumidity_2m: number;
 }

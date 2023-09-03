@@ -1,24 +1,21 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {Dialog, Transition} from "@headlessui/react";
-import {preventDefault} from "../lib/helpers";
 import Validator, {ValidationErrors} from "validatorjs";
-import {useDispatch} from "react-redux";
-import * as noteActions from '../store/note/note.actions';
-import {NoteData, NoteResource} from "../lib/types";
+import {Dialog, Transition} from "@headlessui/react";
 import ValidationErrorMessages from "./ValidationErrorMessages";
+import {NoteData, NoteResource} from "../lib/types";
+import {preventDefault} from "../lib/helpers";
 
-interface EditNoteProps {
+interface NoteEditorProps {
   note: null | NoteResource;
 
   onClose(): void;
+  onSubmit(data: NoteData): void;
 
   show: boolean;
 }
 
-function EditNote({show, onClose, note}: EditNoteProps) {
-  const dispatch = useDispatch();
+function NoteEditor({show, onClose, note, onSubmit}: NoteEditorProps) {
   const [formData, setFormData] = useState<NoteData>({title: '', note: '',});
-
   const [formErrors, setFormErrors] = useState<null | ValidationErrors>(null);
 
   useEffect(() => {
@@ -35,7 +32,7 @@ function EditNote({show, onClose, note}: EditNoteProps) {
     setFormErrors(null);
   }
 
-  function onSubmit() {
+  function handleSubmit() {
     const validation = new Validator(formData, {
       title: "required|max:100",
       note: "required|max:500",
@@ -43,11 +40,7 @@ function EditNote({show, onClose, note}: EditNoteProps) {
 
     if (validation.passes()) {
       setFormErrors(null);
-      if (note) {
-        dispatch(noteActions.editNote(note.id, formData));
-      } else {
-        dispatch(noteActions.createNote(formData));
-      }
+      onSubmit(formData);
       onClose();
     } else {
       setFormErrors(validation.errors.all());
@@ -71,7 +64,7 @@ function EditNote({show, onClose, note}: EditNoteProps) {
 
         <div className="fixed inset-0 overflow-y-auto">
           <form
-            onSubmit={preventDefault(onSubmit)}
+            onSubmit={preventDefault(handleSubmit)}
             className="flex min-h-full items-center justify-center p-4 text-center"
           >
             <Transition.Child
@@ -83,18 +76,15 @@ function EditNote({show, onClose, note}: EditNoteProps) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel
-                className="w-full max-w-sm transform overflow-hidden rounded-3xl bg-slate-900 shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-3xl bg-slate-900 shadow-xl transition-all">
                 <div className="bg-slate-600/10 p-6 text-left align-middle">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-xl font-semibold leading-6"
-                  >
+                  <Dialog.Title as="h3" className="text-xl font-semibold leading-6">
                     <input
                       autoFocus
                       type="text"
                       placeholder='Title'
                       value={formData.title}
+                      aria-label="note-title-input"
                       onChange={(e) => changedInput('title', e.target.value)}
                       className='focus:outline-none bg-transparent w-full'
                     />
@@ -105,6 +95,7 @@ function EditNote({show, onClose, note}: EditNoteProps) {
                       value={formData.note}
                       onChange={(e) => changedInput('note', e.target.value)}
                       className="text-sm text-slate-400/75 w-full bg-transparent focus:outline-none"
+                      aria-label="note-note-input"
                       placeholder='Note'
                       rows={4}
                     >
@@ -113,11 +104,7 @@ function EditNote({show, onClose, note}: EditNoteProps) {
                   </div>
 
                   <div className="mt-4 flex justify-end space-x-2.5">
-                    <button
-                      type='button'
-                      onClick={onClose}
-                      className='btn-outline p-2 !px-5'
-                    >
+                    <button type='button' onClick={onClose} className='btn-outline p-2 !px-5'>
                       <span className='font-medium text-sm text-slate-400'>Cancel</span>
                     </button>
                     <button type='submit' className='btn-primary p-2 !px-5'>
@@ -134,4 +121,4 @@ function EditNote({show, onClose, note}: EditNoteProps) {
   );
 }
 
-export default EditNote;
+export default NoteEditor;

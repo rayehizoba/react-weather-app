@@ -1,13 +1,13 @@
 import React, {MouseEventHandler, PropsWithChildren, useState} from 'react';
 import classNames from "classnames";
 
-type HeaderProps = {
+export type PageTemplateHeaderProps = {
   showSidenav: boolean;
   onToggleSidenav: MouseEventHandler<HTMLButtonElement>;
 }
 
 type PageTemplateProps = PropsWithChildren<{
-    renderHeader(props: HeaderProps): JSX.Element;
+    renderHeader(props: PageTemplateHeaderProps): JSX.Element;
     renderSidenav(): JSX.Element;
 }>
 

@@ -1,6 +1,6 @@
+import {Dispatch} from "redux";
 import {types} from "./forecast.reducer";
 import {ActionType, ForecastResource, LocationResource} from "../../lib/types";
-import {Dispatch} from "redux";
 import {getTimezone, objectToURLQuery} from "../../lib/helpers";
 
 /**

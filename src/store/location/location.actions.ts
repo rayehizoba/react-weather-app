@@ -6,8 +6,8 @@ import {Dispatch} from "redux";
  *
  * @returns {Function}
  */
-export const setLocation = (data: LocationResource): any => {
-  return (dispatch: Dispatch<ActionType<LocationResource>>) => {
+export const setLocation = (data: LocationResource | null): any => {
+  return (dispatch: Dispatch<ActionType<LocationResource | null>>) => {
     dispatch({type: types.SET_LOCATION, data});
   }
 };

@@ -8,23 +8,8 @@ import note from './note/note.reducer';
 import notes from './notes/notes.reducer';
 import forecast from './forecast/forecast.reducer';
 import forecasts from './forecasts/forecasts.reducer';
-import {LocationState} from "./location/location.reducer";
-import {ForeCastState} from "./forecast/forecast.reducer";
-import {LocationsState} from "./locations/locations.reducer";
-import {NoteState} from "./note/note.reducer";
-import {NotesState} from "./notes/notes.reducer";
-import {ForecastsState} from "./forecasts/forecasts.reducer";
 
-export interface RootState {
-  forecast: ForeCastState,
-  forecasts: ForecastsState,
-  location: LocationState,
-  locations: LocationsState,
-  note: NoteState,
-  notes: NotesState,
-}
-
-const reducers = combineReducers<RootState>({
+const reducers = combineReducers({
   forecast,
   forecasts,
   location,
@@ -58,3 +43,11 @@ const store = createStore(persistedReducer, middleware);
 export const persistor = persistStore(store);
 
 export default store;
+
+export type RootState = ReturnType<typeof reducers>
+export type AppStore = ReturnType<typeof setupStore>
+export type AppDispatch = typeof store.dispatch
+
+export const setupStore = (preloadedState: RootState) => {
+  return createStore(reducers, preloadedState, middleware);
+};
