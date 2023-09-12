@@ -104,3 +104,11 @@ export interface WeatherData {
   windspeed_10m: number;
   relativehumidity_2m: number;
 }
+
+export interface QueryResult<T> {
+  data: T;
+  error?: Error | null;
+  loading?: boolean;
+  success?: boolean;
+  setData?: (t: T) => void;
+}

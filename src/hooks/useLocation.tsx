@@ -3,28 +3,24 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectIsCurrentLocation, selectLocation} from "../store/location/location.selectors";
 import {selectIsFavoriteLocation} from "../store/locations/locations.selectors";
 import * as locationActions from "../store/location/location.actions";
-import {LocationResource} from "../lib/types";
+import {LocationResource, QueryResult} from "../lib/types";
 import {RootState} from "../store";
 
-interface UseLocationHook {
-  isCurrentLocation: boolean,
-  isFavoriteLocation: boolean;
-  location: LocationResource | null;
-
-  setLocation(location: LocationResource | null): void;
-
-  toggleFavoriteLocation(): void;
+interface LocationQueryResult extends QueryResult<LocationResource | null> {
+  current: boolean,
+  favorite: boolean;
+  toggleFavorite: () => void;
 }
 
-function useLocation(): UseLocationHook {
+function useLocation(): LocationQueryResult {
   const dispatch = useDispatch();
 
-  const location = useSelector(selectLocation);
-  const isCurrentLocation = useSelector((state: RootState) =>
-    location ? selectIsCurrentLocation(state, location.id) : false
+  const data = useSelector(selectLocation);
+  const current = useSelector((state: RootState) =>
+    data ? selectIsCurrentLocation(state, data.id) : false
   );
-  const isFavoriteLocation = useSelector((state: RootState) =>
-    location ? selectIsFavoriteLocation(state, location.id) : false
+  const favorite = useSelector((state: RootState) =>
+    data ? selectIsFavoriteLocation(state, data.id) : false
   );
 
   useEffect(() => {
@@ -62,21 +58,21 @@ function useLocation(): UseLocationHook {
     );
   }
 
-  function setLocation(location: LocationResource | null) {
+  function setData(location: LocationResource | null) {
     dispatch(locationActions.setLocation(location));
   }
 
-  async function toggleFavoriteLocation() {
-    if (location) {
+  async function toggleFavorite() {
+    if (data) {
       await dispatch(
-        isFavoriteLocation
-          ? locationActions.removeLocation(location.id)
-          : locationActions.saveLocation(location)
+        favorite
+          ? locationActions.removeLocation(data.id)
+          : locationActions.saveLocation(data)
       );
     }
   }
 
-  return {location, setLocation, isCurrentLocation, isFavoriteLocation, toggleFavoriteLocation};
+  return {data, setData, current, favorite, toggleFavorite};
 }
 
 export default useLocation;

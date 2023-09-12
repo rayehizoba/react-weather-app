@@ -2,7 +2,7 @@ import {
   areEqualFloats,
   formatDailyTime,
   formatHourlyTime, geoNames2Location,
-  getTodayWeatherData,
+  getTodayWeatherData, mergeArraysBy, objectToURLQuery,
   weatherCode2MDI,
   weatherCode2Str
 } from "./helpers";
@@ -267,5 +267,68 @@ describe('geoNames2Location', () => {
 
     const result = geoNames2Location(mockGeoNamesResource);
     expect(result).toEqual(expectedLocationResource);
+  });
+});
+
+describe("mergeArraysBy", () => {
+  it("should merge arrays based on custom key and comparator", () => {
+    interface Element {
+      name: string;
+      category: string;
+    }
+
+    const a: Element[] = [
+      { name: "A", category: "X" },
+      { name: "B", category: "Y" },
+      { name: "C", category: "Z" },
+    ];
+
+    const b: Element[] = [
+      { name: "B", category: "Y" },
+      { name: "C", category: "Z" },
+      { name: "D", category: "W" },
+    ];
+
+    const keyFn = (element: Element) => `${element.name}-${element.category}`;
+
+    const mergedArray = mergeArraysBy(
+      a,
+      b,
+      keyFn,
+      (elementA, elementB) => elementA.name === elementB.name
+    );
+
+    // The expected merged array
+    const expectedMergedArray: Element[] = [
+      { name: "A", category: "X" },
+      { name: "B", category: "Y" }, // Chosen from 'b' due to the comparator
+      { name: "C", category: "Z" }, // Chosen from 'b' due to the comparator
+      { name: "D", category: "W" }, // Added from 'b' since it's not in 'a'
+    ];
+
+    expect(mergedArray).toEqual(expectedMergedArray);
+  });
+});
+
+describe('objectToURLQuery', () => {
+  it('should convert an object to a URL query string', () => {
+    const input = { key1: 'value1', key2: 'value2' };
+    const expected = 'key1=value1&key2=value2';
+    const result = objectToURLQuery(input);
+    expect(result).toBe(expected);
+  });
+
+  it('should handle null values by excluding them from the query string', () => {
+    const input = { key1: 'value1', key2: null, key3: 'value3' };
+    const expected = 'key1=value1&key3=value3';
+    const result = objectToURLQuery(input);
+    expect(result).toBe(expected);
+  });
+
+  it('should handle an empty object by returning an empty string', () => {
+    const input = {};
+    const expected = '';
+    const result = objectToURLQuery(input);
+    expect(result).toBe(expected);
   });
 });

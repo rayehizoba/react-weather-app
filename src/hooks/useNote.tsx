@@ -2,55 +2,48 @@ import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {selectNote} from "../store/note/note.selectors";
 import * as noteActions from "../store/note/note.actions";
-import {NoteData, NoteResource} from "../lib/types";
+import {NoteData, NoteResource, QueryResult} from "../lib/types";
 
-interface UseNotesHook {
-  handleDeleteNote(note: NoteResource): void;
-
-  handleEditNote(note: NoteResource): void;
-
-  handleNewNote(): void;
-
-  handleSubmitNote(data: NoteData): void;
-
-  isEditingNote: boolean;
-
-  note: NoteResource | null;
-
-  setIsEditingNote(isEditingNote: boolean): void;
+interface NoteQueryResult extends QueryResult<NoteResource | null> {
+  editing: boolean;
+  onCreate: () => void;
+  onDelete: (note: NoteResource) => void;
+  onEdit: (note: NoteResource) => void;
+  onSubmit: (note: NoteData) => void;
+  setEditing: (editing: boolean) => void;
 }
 
-function useNote(): UseNotesHook {
+function useNote(): NoteQueryResult {
   const dispatch = useDispatch();
-  const note = useSelector(selectNote);
+  const data = useSelector(selectNote);
 
-  const [isEditingNote, setIsEditingNote] = useState(false);
+  const [editing, setEditing] = useState(false);
 
-  function handleNewNote() {
+  function onCreate() {
     dispatch(noteActions.setNote(null));
-    setIsEditingNote(true);
+    setEditing(true);
   }
 
-  function handleEditNote(note: NoteResource) {
+  function onEdit(note: NoteResource) {
     dispatch(noteActions.setNote(note));
-    setIsEditingNote(true);
+    setEditing(true);
   }
 
-  function handleDeleteNote(note: NoteResource) {
+  function onDelete(note: NoteResource) {
     if (window.confirm('Are you sure you want to delete this?')) {
       dispatch(noteActions.deleteNote(note.id));
     }
   }
 
-  function handleSubmitNote(data: NoteData) {
-    if (note) {
-      dispatch(noteActions.editNote(note.id, data));
+  function onSubmit(note: NoteData) {
+    if (data) {
+      dispatch(noteActions.editNote(data.id, note));
     } else {
-      dispatch(noteActions.createNote(data));
+      dispatch(noteActions.createNote(note));
     }
   }
 
-  return {handleDeleteNote, handleEditNote, handleNewNote, handleSubmitNote, isEditingNote, note, setIsEditingNote};
+  return {data, editing, onCreate, onDelete, onEdit, onSubmit, setEditing};
 }
 
 export default useNote;

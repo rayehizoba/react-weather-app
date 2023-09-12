@@ -2,7 +2,7 @@ import React from "react";
 import fetchMock from "fetch-mock";
 import {Provider} from "react-redux";
 import {AnyAction, Store} from "redux";
-import {renderHook} from "@testing-library/react-hooks/dom";
+import {renderHook} from "@testing-library/react";
 import {RootState, setupStore} from "../store";
 import useNotes from "./useNotes";
 
@@ -25,6 +25,6 @@ describe('useNotes', () => {
   it("should initialize with default values", () => {
     const {result} = renderHook(() => useNotes(), {wrapper});
 
-    expect(result.current.notes).toEqual([]);
+    expect(result.current.data).toEqual([]);
   });
 });

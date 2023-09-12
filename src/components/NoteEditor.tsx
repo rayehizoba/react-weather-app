@@ -7,10 +7,8 @@ import {preventDefault} from "../lib/helpers";
 
 interface NoteEditorProps {
   note: null | NoteResource;
-
-  onClose(): void;
-  onSubmit(data: NoteData): void;
-
+  onClose: () => void;
+  onSubmit: (data: NoteData) => void;
   show: boolean;
 }
 
@@ -76,7 +74,8 @@ function NoteEditor({show, onClose, note, onSubmit}: NoteEditorProps) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-3xl bg-slate-900 shadow-xl transition-all">
+              <Dialog.Panel
+                className="w-full max-w-sm transform overflow-hidden rounded-3xl bg-slate-900 shadow-xl transition-all">
                 <div className="bg-slate-600/10 p-6 text-left align-middle">
                   <Dialog.Title as="h3" className="text-xl font-semibold leading-6">
                     <input

@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {LocationResource} from "../lib/types";
+import {LocationResource, QueryResult} from "../lib/types";
 import {useDispatch, useSelector} from "react-redux";
 import {
   selectLocations,
@@ -9,17 +9,10 @@ import {
 } from "../store/locations/locations.selectors";
 import * as locationsActions from "../store/locations/locations.actions";
 
-interface UseLocationsHook {
-  locations: LocationResource[];
-  error: Error | null;
-  isLoadingLocations: boolean;
-  success: boolean;
-}
-
-function useLocations(): UseLocationsHook {
+function useLocations(): QueryResult<LocationResource[]> {
   const dispatch = useDispatch();
-  const locations = useSelector(selectLocations);
-  const isLoadingLocations = useSelector(selectLocationsFetch);
+  const data = useSelector(selectLocations);
+  const loading = useSelector(selectLocationsFetch);
   const success = useSelector(selectLocationsFetchSuccess);
   const error = useSelector(selectLocationsFetchError);
 
@@ -29,7 +22,7 @@ function useLocations(): UseLocationsHook {
     }
   }, [dispatch, success]);
 
-  return {locations, isLoadingLocations, success, error};
+  return {data, loading, success, error};
 }
 
 export default useLocations;

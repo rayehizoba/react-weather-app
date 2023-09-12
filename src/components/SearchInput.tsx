@@ -2,7 +2,7 @@ import React, {Fragment, useEffect, useRef, useState} from 'react';
 import {useClickOutside, useDebounce} from "@reactuses/core";
 import {LocationResource, SearchResponseData} from "../lib/types";
 import {Menu, Transition} from "@headlessui/react";
-import Lottie from "react-lottie";
+import Lottie from "react-lottie-player";
 
 interface SearchInputProps {
   busy?: boolean;
@@ -12,7 +12,7 @@ interface SearchInputProps {
 
 function SearchInput({busy, onChange}: SearchInputProps) {
   const [fetch, setFetch] = useState<boolean>(false);
-  const [fetchError, setFetchError] = useState(null);
+  const [fetchError, setFetchError] = useState<Error | null>(null);
   const [value, setValue] = useState<string>("");
   const debouncedValue = useDebounce(value, 250);
   const debouncedFetch = useDebounce(fetch, 250);
@@ -80,21 +80,15 @@ function SearchInput({busy, onChange}: SearchInputProps) {
               ? (
                 <i
                   data-testid='search-error'
-                  className="mdi mdi-alert-circle-outline text-3xl text-red-400"
+                  title={fetchError.message}
+                  className="mdi mdi-alert-circle-outline text-3xl text-red-400 pointer-events-auto"
                 ></i>
               )
               : (debouncedFetch || busy
                   ? (
                     <span data-testid='isLoading-spinner' className="w-8 opacity-25">
-                    <Lottie options={{
-                      loop: true,
-                      autoplay: true,
-                      animationData: require('../assets/json/spinner.json'),
-                      rendererSettings: {
-                        preserveAspectRatio: 'xMidYMid slice'
-                      }
-                    }}/>
-                  </span>
+                      <Lottie loop play animationData={require('../assets/json/spinner.json')}/>
+                    </span>
                   )
                   : <i className="mdi mdi-magnify text-3xl text-slate-400"></i>
               )}

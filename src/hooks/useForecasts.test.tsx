@@ -6,9 +6,9 @@ import moment from "moment-timezone";
 import {faker} from "@faker-js/faker";
 import {RootState, setupStore} from "../store";
 import {ForecastResource, LocationResource} from "../lib/types";
-import {renderHook} from "@testing-library/react-hooks";
-import useForecasts from "./useForecasts";
+import {renderHook, waitFor} from "@testing-library/react";
 import {objectToURLQuery} from "../lib/helpers";
+import useForecasts from "./useForecasts";
 
 function getWrapper(store: Store<any, AnyAction>): React.FC {
   return ({children}: { children?: React.ReactNode }) => (
@@ -103,15 +103,15 @@ describe('useForecasts', () => {
       mockForecasts.push(mockForecast);
     });
 
-    const {result, waitForNextUpdate} = renderHook(
+    const {result} = renderHook(
       () => useForecasts(mockLocations),
       {wrapper}
     );
 
-    expect(result.current.forecasts).toEqual([]);
+    expect(result.current.data).toEqual([]);
 
-    await waitForNextUpdate();
-
-    expect(result.current.forecasts).toEqual(mockForecasts);
+    await waitFor(() => {
+      expect(result.current.data).toEqual(mockForecasts);
+    });
   });
 });

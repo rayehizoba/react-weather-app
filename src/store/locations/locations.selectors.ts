@@ -1,17 +1,22 @@
+import { createSelector } from 'reselect';
 import {ID, LocationResource} from "../../lib/types";
 import {RootState} from "../index";
 
-export const selectLocations = (state: RootState): LocationResource[] => {
-  const locations: LocationResource[] = [];
+export const selectLocations = createSelector(
+  (state: RootState) => state.location.current,
+  (state: RootState) => state.locations.collection,
+  (currentLocation, locations) => {
+    const collection: LocationResource[] = [];
 
-  if (state.location.current) {
-    locations.push(state.location.current);
+    if (currentLocation) {
+      collection.push(currentLocation);
+    }
+
+    return collection.concat(
+      locations.sort((a, b) => a.name.localeCompare(b.name))
+    );
   }
-
-  return locations.concat(
-    state.locations.collection.sort((a, b) => a.name.localeCompare(b.name))
-  );
-}
+);
 
 export const selectLocationsFetch = (state: RootState) => state.locations.fetch;
 export const selectLocationsFetchError = (state: RootState) => state.locations.fetchError;

@@ -1,5 +1,5 @@
 import React from 'react';
-import Lottie from "react-lottie";
+import Lottie from "react-lottie-player";
 import classNames from "classnames";
 import {ForecastResource, LocationResource, WeatherData} from "../lib/types";
 import {
@@ -61,14 +61,7 @@ function CurrentForecast({forecast, location}: CurrentForecastProps) {
       <div data-testid='current-forecast' className="flex flex-wrap md:flex-nowrap items-center justify-between px-2">
         <div className="w-full md:w-auto flex items-center md:justify-between">
           <figure className='w-2/5 md:w-48 -my-6 md:mb-0 md:-mt-16'>
-            <Lottie options={{
-              loop: true,
-              autoplay: true,
-              animationData: weatherCode2LottieJSON(weatherCode),
-              rendererSettings: {
-                preserveAspectRatio: 'xMidYMid slice'
-              }
-            }}/>
+            <Lottie loop play animationData={weatherCode2LottieJSON(weatherCode)}/>
           </figure>
           <div className="space-y-1 p-3 xl:p-5">
             <div className="transition-all text-4xl xl:text-5xl tracking-tight break-all">

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import classNames from "classnames";
+import toast, {Toaster} from 'react-hot-toast';
 import {Transition} from "@headlessui/react";
 import {useDebounce} from "@reactuses/core";
 import SearchInput from "./components/SearchInput";
@@ -10,7 +11,6 @@ import {LocationResource} from "./lib/types";
 import FavoritesList from "./components/FavoritesList";
 import NotesList from "./components/NotesList";
 import CurrentForecast from "./components/CurrentForecast";
-// import ApiError from "./components/ApiError";
 import useForecast from "./hooks/useForecast";
 import useLocations from "./hooks/useLocations";
 import useForecasts from "./hooks/useForecasts";
@@ -21,21 +21,36 @@ import useNote from "./hooks/useNote";
 import './App.css';
 
 function App() {
-  const {notes} = useNotes();
+  const {data: notes} = useNotes();
   const {
-    note, isEditingNote, handleNewNote, handleEditNote,
-    handleDeleteNote, setIsEditingNote, handleSubmitNote
+    data: note,
+    editing: editingNote,
+    onCreate: onCreateNote,
+    onDelete: onDeleteNote,
+    onEdit: onEditNote,
+    onSubmit: onSubmitNote,
+    setEditing: setEditingNote,
   } = useNote();
 
-  const {locations, isLoadingLocations} = useLocations();
-  const {location, setLocation, isCurrentLocation, isFavoriteLocation, toggleFavoriteLocation} = useLocation();
+  const {data: locations, loading: locationsLoading, error: locationsError} = useLocations();
+  const {data: location, setData: setLocation, current, favorite, toggleFavorite} = useLocation();
   const debouncedLocation = useDebounce(location, 150);
 
-  const {forecasts} = useForecasts(locations);
-  const {forecast, isLoadingForecast,} = useForecast(location);
+  const {data: forecasts} = useForecasts(locations);
+  const {data: forecast, loading: forecastLoading, error: forecastError} = useForecast(location);
 
-  const isLoading = isLoadingForecast || isLoadingLocations;
-  // const error = forecastFetchError ?? locationsFetchError;
+  const isLoading = forecastLoading || locationsLoading;
+  const debouncedIsLoading = useDebounce(isLoading, 150);
+  const error = forecastError ?? locationsError;
+
+  useEffect(() => {
+    if (error && error.message) {
+      toast.error(error.message, {
+        id: 'error',
+        className: 'bg-slate-600/75 text-white rounded-xl border border-slate-600 shadow-xl backdrop-blur-sm font-medium',
+      });
+    }
+  }, [error]);
 
   function onChangeLocation(location: LocationResource) {
     setLocation && setLocation(location);
@@ -44,15 +59,10 @@ function App() {
   function renderHeader({onToggleSidenav, showSidenav}: PageTemplateHeaderProps) {
     return (
       <header className="flex items-stretch justify-end space-x-2.5 relative">
-        {/*{error && <ApiError error={error}/>}*/}
-        {location && !isCurrentLocation && (
-          <FavoriteButton
-            onClick={toggleFavoriteLocation}
-            active={isFavoriteLocation}
-            busy={isLoadingForecast}
-          />
+        {location && !current && (
+          <FavoriteButton onClick={toggleFavorite} busy={forecastLoading} active={favorite}/>
         )}
-        <SearchInput onChange={onChangeLocation} busy={isLoading}/>
+        <SearchInput onChange={onChangeLocation} busy={debouncedIsLoading}/>
         <button type='button' onClick={onToggleSidenav} className='lg:hidden z-10'>
           <i className={classNames("mdi text-3xl text-sky-300/50", showSidenav ? 'mdi-close' : 'mdi-menu')}></i>
         </button>
@@ -66,7 +76,6 @@ function App() {
         location={location}
         locations={locations}
         forecasts={forecasts}
-        isLoading={isLoadingLocations}
         onClickLocation={(location: LocationResource) => setLocation && setLocation(location)}
         className='w-64 shadow-xl lg:shadow-none'
       />
@@ -77,7 +86,7 @@ function App() {
     <PageTemplate renderHeader={renderHeader} renderSidenav={renderSidenav}>
       {debouncedLocation && forecast && (
         <Transition
-          show={!isLoadingForecast}
+          show={!forecastLoading}
           enter="transform transition duration-200"
           enterFrom="opacity-0 scale-95"
           enterTo="opacity-100 scale-100"
@@ -94,20 +103,21 @@ function App() {
             <div className="lg:col-span-3">
               <NoteEditor
                 note={note}
-                show={isEditingNote}
-                onSubmit={handleSubmitNote}
-                onClose={() => setIsEditingNote(false)}
+                show={editingNote}
+                onSubmit={onSubmitNote}
+                onClose={() => setEditingNote(false)}
               />
               <NotesList
                 notes={notes}
-                onClickNew={handleNewNote}
-                onClickEdit={handleEditNote}
-                onClickDelete={handleDeleteNote}
+                onClickNew={onCreateNote}
+                onClickEdit={onEditNote}
+                onClickDelete={onDeleteNote}
               />
             </div>
           </div>
         </Transition>
       )}
+      <Toaster position={'bottom-center'} containerStyle={{bottom: 35}}/>
     </PageTemplate>
   );
 }

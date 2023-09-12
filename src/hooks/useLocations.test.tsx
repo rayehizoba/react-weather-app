@@ -2,7 +2,7 @@ import React from "react";
 import fetchMock from "fetch-mock";
 import { Provider } from "react-redux";
 import { Store, AnyAction } from "redux";
-import { renderHook } from "@testing-library/react-hooks/dom";
+import {renderHook, waitFor} from "@testing-library/react";
 import { GeoNamesResponseData, LocationResource } from "../lib/types";
 import { geoNames2Location, objectToURLQuery } from "../lib/helpers";
 import { RootState, setupStore } from "../store";
@@ -34,34 +34,34 @@ describe('useLocations', () => {
   it('should fetch 15 largest cities location note', async () => {
     fetchMock.getOnce(url, mockResponseData as GeoNamesResponseData);
 
-    const { result, waitForNextUpdate } = renderHook(() => useLocations(), { wrapper });
+    const { result } = renderHook(() => useLocations(), { wrapper });
 
-    expect(result.current.locations).toEqual([]);
-    expect(result.current.isLoadingLocations).toBe(true);
+    expect(result.current.data).toEqual([]);
+    expect(result.current.loading).toBe(true);
 
-    await waitForNextUpdate();
-
-    const sortedLocations = mockResponseData.records
-      .map(geoNames2Location)
-      .sort((a: LocationResource, b: LocationResource) => a.name.localeCompare(b.name));
-    expect(result.current.locations).toEqual(sortedLocations);
+    await waitFor(() => {
+      const sortedLocations = mockResponseData.records
+        .map(geoNames2Location)
+        .sort((a: LocationResource, b: LocationResource) => a.name.localeCompare(b.name));
+      expect(result.current.data).toEqual(sortedLocations);
+    });
     expect(result.current.success).toEqual(true);
-    expect(result.current.isLoadingLocations).toBe(false);
+    expect(result.current.loading).toBe(false);
   });
 
   it('should handle fetch error', async () => {
     fetchMock.getOnce(url, 500);
 
-    const { result, waitForNextUpdate } = renderHook(() => useLocations(), { wrapper });
+    const { result } = renderHook(() => useLocations(), { wrapper });
 
-    expect(result.current.locations).toEqual([]);
-    expect(result.current.isLoadingLocations).toBe(true);
+    expect(result.current.data).toEqual([]);
+    expect(result.current.loading).toBe(true);
 
-    await waitForNextUpdate();
-
-    expect(result.current.locations).toEqual([]);
+    await waitFor(() => {
+      expect(result.current.data).toEqual([]);
+    });
+    expect(result.current.loading).toBe(false);
     expect(result.current.error).toBeTruthy();
-    expect(result.current.isLoadingLocations).toBe(false);
   });
 });
 

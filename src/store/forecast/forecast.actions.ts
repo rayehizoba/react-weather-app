@@ -20,7 +20,7 @@ export const fetchForecast = (location: LocationResource): any => {
       timezone: location.timezone || getTimezone(),
     });
 
-    fetch(url)
+    return fetch(url)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');

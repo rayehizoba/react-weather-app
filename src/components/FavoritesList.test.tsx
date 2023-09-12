@@ -2,7 +2,7 @@ import React from "react";
 import {render, screen, within} from "@testing-library/react";
 import FavoritesList from "./FavoritesList";
 import {ForecastResource, LocationResource} from "../lib/types";
-import {areEqualFloats, formatHourlyTime, getTimezone, getTodayWeatherData, weatherCode2Str} from "../lib/helpers";
+import {areEqualFloats, formatHourlyTime, getTodayWeatherData, weatherCode2Str} from "../lib/helpers";
 import moment from "moment-timezone";
 import {faker} from "@faker-js/faker";
 

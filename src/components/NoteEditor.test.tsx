@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import {render, fireEvent, screen, waitFor} from '@testing-library/react';
 import NoteEditor from './NoteEditor';
 import {NoteResource} from "../lib/types";
 
 describe('NoteEditor', () => {
-  it('should render NoteEditor with initial data', () => {
+  it('should render NoteEditor with initial data', async () => {
     const mockNote: NoteResource = {
       id: '1',
       title: 'Test Note',
@@ -13,43 +13,36 @@ describe('NoteEditor', () => {
       updated_at: Date.now(),
     };
 
-    render(
-      <NoteEditor
-        show={true}
-        note={mockNote}
-        onClose={() => {}}
-        onSubmit={(data) => {}}
-      />
-    );
+    render(<NoteEditor show={true} note={mockNote} onClose={jest.fn} onSubmit={jest.fn}/>);
 
     const titleInput = screen.getByLabelText('note-title-input');
-    const noteInput = screen.getByLabelText('note-note-input');
+    await waitFor(() => expect(titleInput).toHaveValue(mockNote.title));
 
-    expect(titleInput).toHaveValue(mockNote.title);
+    const noteInput = screen.getByLabelText('note-note-input');
     expect(noteInput).toHaveValue(mockNote.note);
   });
 
-  it('should update form data when inputs change', () => {
-    render(<NoteEditor show={true} note={null} onClose={() => {}} onSubmit={() => {}} />);
+  it('should update form data when inputs change', async () => {
+    render(<NoteEditor show={true} note={null} onClose={jest.fn} onSubmit={jest.fn}/>);
 
     const titleInput = screen.getByLabelText('note-title-input');
     const noteInput = screen.getByLabelText('note-note-input');
 
-    fireEvent.change(titleInput, { target: { value: 'New Title' } });
-    fireEvent.change(noteInput, { target: { value: 'New Note Content' } });
+    fireEvent.change(titleInput, {target: {value: 'New Title'}});
+    fireEvent.change(noteInput, {target: {value: 'New Note Content'}});
 
-    expect(titleInput).toHaveValue('New Title');
+    await waitFor(() => expect(titleInput).toHaveValue('New Title'));
     expect(noteInput).toHaveValue('New Note Content');
   });
 
-  it('should validate form data when form is submitted',  () => {
+  it('should validate form data when form is submitted', async () => {
     const onSubmit = jest.fn();
-    render(<NoteEditor show={true} note={null} onClose={() => {}} onSubmit={onSubmit} />);
+    render(<NoteEditor show={true} note={null} onClose={jest.fn} onSubmit={onSubmit}/>);
 
     const saveButton = screen.getByText('Save');
     fireEvent.click(saveButton);
 
-    expect(onSubmit).toHaveBeenCalledTimes(0);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(0));
 
     const titleValidationError = screen.getByText('The title field is required.');
     expect(titleValidationError).toBeInTheDocument();
@@ -58,29 +51,29 @@ describe('NoteEditor', () => {
     expect(noteValidationError).toBeInTheDocument();
   });
 
-  it('should call onSubmit when form is submitted',  () => {
+  it('should call onSubmit when form is submitted', async () => {
     const onSubmit = jest.fn();
-    render(<NoteEditor show={true} note={null} onClose={() => {}} onSubmit={onSubmit} />);
+    render(<NoteEditor show={true} note={null} onClose={jest.fn} onSubmit={onSubmit}/>);
 
     const titleInput = screen.getByLabelText('note-title-input');
     const noteInput = screen.getByLabelText('note-note-input');
 
-    fireEvent.change(titleInput, { target: { value: 'New Title' } });
-    fireEvent.change(noteInput, { target: { value: 'New Note Content' } });
+    fireEvent.change(titleInput, {target: {value: 'New Title'}});
+    fireEvent.change(noteInput, {target: {value: 'New Note Content'}});
 
     const saveButton = screen.getByText('Save');
     fireEvent.click(saveButton);
 
-    expect(onSubmit).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
   });
 
-  it('should call onClose when Cancel button is clicked', () => {
+  it('should call onClose when Cancel button is clicked', async () => {
     const onClose = jest.fn();
-    render(<NoteEditor show={true} note={null} onClose={onClose} onSubmit={() => {}} />);
+    render(<NoteEditor show={true} note={null} onClose={onClose} onSubmit={jest.fn}/>);
 
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);
 
-    expect(onClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
   });
 });

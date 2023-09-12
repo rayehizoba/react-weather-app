@@ -2,7 +2,7 @@ import React from "react";
 import fetchMock from "fetch-mock";
 import {Provider} from "react-redux";
 import {AnyAction, Store} from "redux";
-import {renderHook} from "@testing-library/react-hooks/dom";
+import {renderHook, waitFor} from "@testing-library/react";
 import {RootState, setupStore} from "../store";
 import {NoteData} from "../lib/types";
 import useNote from "./useNote";
@@ -27,36 +27,40 @@ describe('useNote and userNotes', () => {
   it("should initialize with default values", () => {
     const {result} = renderHook(() => useNote(), {wrapper});
 
-    expect(result.current.note).toBeNull();
-    expect(result.current.isEditingNote).toEqual(false);
+    expect(result.current.data).toBeNull();
+    expect(result.current.editing).toEqual(false);
   });
 
-  it("should handleNewNote correctly", () => {
+  it("should handleNewNote correctly", async () => {
     const {result: notesResult} = renderHook(() => useNotes(), {wrapper});
     const {result: noteResult} = renderHook(() => useNote(), {wrapper});
 
-    noteResult.current.handleNewNote();
+    await waitFor(() => {
+      noteResult.current.onCreate();
+      expect(noteResult.current.editing).toEqual(true);
+    });
 
-    expect(noteResult.current.note).toEqual(null);
-    expect(noteResult.current.isEditingNote).toEqual(true);
-    expect(notesResult.current.notes.length).toEqual(0);
+    expect(noteResult.current.data).toEqual(null);
+    expect(notesResult.current.data.length).toEqual(0);
 
     const newNote: NoteData = {
       title: 'Test Note',
       note: 'This is a test note',
     };
-    noteResult.current.handleSubmitNote(newNote);
 
-    expect(notesResult.current.notes.length).toEqual(1);
+    await waitFor(() => {
+      noteResult.current.onSubmit(newNote);
+      expect(notesResult.current.data.length).toEqual(1);
+    });
   });
 
-  it("should handleEditNote correctly", () => {
+  it("should handleEditNote correctly", async () => {
     const {result: notesResult} = renderHook(() => useNotes(), {wrapper});
     const {result: noteResult} = renderHook(() => useNote(), {wrapper});
 
-    expect(noteResult.current.note).toEqual(null);
-    expect(noteResult.current.isEditingNote).toEqual(false);
-    expect(notesResult.current.notes.length).toEqual(0);
+    expect(noteResult.current.data).toEqual(null);
+    expect(noteResult.current.editing).toEqual(false);
+    expect(notesResult.current.data.length).toEqual(0);
 
     const noteA = {
       id: '1',
@@ -73,13 +77,19 @@ describe('useNote and userNotes', () => {
       updated_at: Date.now(),
     };
 
-    noteResult.current.handleSubmitNote(noteA);
-    noteResult.current.handleSubmitNote(noteB);
-    expect(notesResult.current.notes).toEqual([noteA, noteB]);
+    await waitFor(() => {
+      noteResult.current.onSubmit(noteA);
+      noteResult.current.onSubmit(noteB);
+    });
 
-    noteResult.current.handleEditNote(noteB);
-    expect(noteResult.current.note).toEqual(noteB);
-    expect(noteResult.current.isEditingNote).toEqual(true);
+    expect(notesResult.current.data).toEqual([noteA, noteB]);
+
+    await waitFor(() => {
+      noteResult.current.onEdit(noteB);
+
+      expect(noteResult.current.data).toEqual(noteB);
+    });
+    expect(noteResult.current.editing).toEqual(true);
 
     const updatedNoteB = {
       ...noteB,
@@ -87,30 +97,37 @@ describe('useNote and userNotes', () => {
       note: 'Updated note',
     };
 
-    noteResult.current.handleSubmitNote(updatedNoteB);
-    expect(notesResult.current.notes).toEqual([noteA, updatedNoteB]);
+    await waitFor(() => {
+      noteResult.current.onSubmit(updatedNoteB);
+      expect(notesResult.current.data).toEqual([noteA, updatedNoteB]);
+    });
   });
 
-  it("should handleDeleteNote correctly", () => {
+  it("should handleDeleteNote correctly", async () => {
     const windowConfirmMock = jest.spyOn(window, "confirm").mockReturnValue(true);
 
     const {result: notesResult} = renderHook(() => useNotes(), {wrapper});
     const {result: noteResult} = renderHook(() => useNote(), {wrapper});
 
-    expect(notesResult.current.notes.length).toEqual(0);
+    expect(notesResult.current.data.length).toEqual(0);
 
     const newNote: NoteData = {
       title: 'Test Note',
       note: 'This is a test note',
     };
-    noteResult.current.handleSubmitNote(newNote);
 
-    expect(notesResult.current.notes.length).toEqual(1);
+    await waitFor(() => {
+      noteResult.current.onSubmit(newNote);
+    });
 
-    noteResult.current.handleDeleteNote(notesResult.current.notes[0]);
+    expect(notesResult.current.data.length).toEqual(1);
 
+    await waitFor(() => {
+      noteResult.current.onDelete(notesResult.current.data[0]);
+    });
+
+    expect(notesResult.current.data.length).toEqual(0)
     expect(windowConfirmMock).toHaveBeenCalledWith("Are you sure you want to delete this?");
-    expect(notesResult.current.notes.length).toEqual(0)
 
     windowConfirmMock.mockRestore();
   });

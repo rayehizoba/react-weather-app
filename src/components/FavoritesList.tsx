@@ -8,7 +8,6 @@ import Card from "./Card";
 interface FavoritesListProps {
   className?: string,
   forecasts: ForecastResource[],
-  isLoading?: boolean,
   location?: LocationResource | null,
   locations: LocationResource[],
 

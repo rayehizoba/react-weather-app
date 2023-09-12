@@ -2,8 +2,9 @@ import React from "react";
 import fetchMock from "fetch-mock";
 import {Provider} from "react-redux";
 import {AnyAction, Store} from "redux";
-import {renderHook} from '@testing-library/react-hooks';
+import {renderHook, waitFor} from '@testing-library/react';
 import {RootState, setupStore} from "../store";
+import mockGeolocation from "../mocks/geolocation-mock";
 import useLocation from './useLocation';
 
 function getWrapper(store: Store<any, AnyAction>): React.FC {
@@ -11,13 +12,6 @@ function getWrapper(store: Store<any, AnyAction>): React.FC {
     <Provider store={store}>{children}</Provider>
   );
 }
-
-// Mock the navigator.geolocation object
-const mockGeolocation = {
-  getCurrentPosition: jest.fn(),
-};
-
-(global.navigator as any).geolocation = mockGeolocation;
 
 describe('useLocation', () => {
   let mockStore: Store;
@@ -44,7 +38,7 @@ describe('useLocation', () => {
     const {result} = renderHook(() => useLocation(), {wrapper});
 
     // Verify that location is set to the current location
-    expect(result.current.location).toEqual({
+    expect(result.current.data).toEqual({
       country: '',
       country_code: '',
       country_id: '',
@@ -77,36 +71,41 @@ describe('useLocation', () => {
     );
 
     // Verify that location is null
-    expect(result.current.location).toBeNull();
+    expect(result.current.data).toBeNull();
   });
 
   it('should toggle favorite location', async () => {
     const mockLocation = require('../mocks/location-resource-mock.json');
-    const {result, waitForNextUpdate} = renderHook(() => useLocation(), {wrapper});
+    const {result} = renderHook(() => useLocation(), {wrapper});
 
     // Check that location is initially null
-    expect(result.current.location).toBeNull();
+    expect(result.current.data).toBeNull();
 
     // Set the location
-    result.current.setLocation(mockLocation);
+    (result.current as any).setData(mockLocation);
 
-    // Check that location is now set correctly
-    expect(result.current.location).toEqual(mockLocation);
+    await waitFor(() => {
+      // Check that location is now set correctly
+      expect(result.current.data).toEqual(mockLocation);
+    });
 
-    // Check that isFavoriteLocation is initially false
-    expect(result.current.isFavoriteLocation).toBe(false);
+    // Check that favorite is initially false
+    expect(result.current.favorite).toBe(false);
 
     // Toggle favorite location
-    result.current.toggleFavoriteLocation();
+    result.current.toggleFavorite();
 
-    // Check that isFavoriteLocation is now true
-    expect(result.current.isFavoriteLocation).toBe(true);
+    await waitFor(() => {
+      // Check that favorite is now true
+      expect(result.current.favorite).toBe(true);
+    });
 
     // Toggle favorite location again
-    result.current.toggleFavoriteLocation();
-    await waitForNextUpdate();
+    result.current.toggleFavorite();
 
-    // Check that isFavoriteLocation is now false
-    expect(result.current.isFavoriteLocation).toBe(false);
+    await waitFor(() => {
+      // Check that favorite is now false
+      expect(result.current.favorite).toBe(false);
+    });
   });
 });

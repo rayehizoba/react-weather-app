@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
+import {renderHook, waitFor} from '@testing-library/react';
 import useForecast from './useForecast';
 import { Provider } from 'react-redux';
 import {AnyAction, Store} from "redux";
@@ -37,36 +37,30 @@ describe('useForecast', () => {
   it('should fetch forecast note when location is provided', async () => {
     fetchMock.getOnce(url, mockResponseData as ForecastResource);
 
-    const { result, waitForNextUpdate } = renderHook(
-      () => useForecast(mockLocation),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useForecast(mockLocation), { wrapper });
 
-    expect(result.current.forecast).toEqual(null);
-    expect(result.current.isLoadingForecast).toBe(true);
+    expect(result.current.loading).toBe(true);
+    expect(result.current.data).toEqual(null);
 
-    await waitForNextUpdate();
-
-    expect(result.current.forecast).toEqual(mockResponseData);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.data).toEqual(mockResponseData);
     expect(result.current.success).toBe(true);
-    expect(result.current.isLoadingForecast).toBe(false);
   });
 
   it('should handle fetch error', async () => {
     fetchMock.getOnce(url, 500);
 
-    const { result, waitForNextUpdate } = renderHook(
-      () => useForecast(mockLocation),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useForecast(mockLocation), { wrapper });
 
-    expect(result.current.forecast).toEqual(null);
-    expect(result.current.isLoadingForecast).toBe(true);
+    expect(result.current.data).toEqual(null);
+    expect(result.current.loading).toBe(true);
 
-    await waitForNextUpdate();
-
-    expect(result.current.forecast).toEqual(null);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.data).toEqual(null);
     expect(result.current.error).toBeTruthy();
-    expect(result.current.isLoadingForecast).toBe(false);
   });
 });

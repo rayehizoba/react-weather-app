@@ -12,7 +12,7 @@ function ValidationErrorMessages({errors, name}: ValidationErrorMessagesProps) {
     return (
       <>
         {errors[name].map(error => (
-          <div className="text-xs text-red-500/75 font-medium">
+          <div key={error} className="text-xs text-red-500/75 font-medium">
             {error}
           </div>
         ))}

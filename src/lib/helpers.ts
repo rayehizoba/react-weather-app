@@ -105,7 +105,7 @@ export function weatherCode2MDI(code: number): string {
  *
  * @param code
  */
-export function weatherCode2LottieJSON(code?: number): string {
+export function weatherCode2LottieJSON(code?: number): any {
   switch (code) {
     case 0:
       return require('../assets/json/clear_sky.json');
@@ -291,26 +291,6 @@ export function areEqualFloats(a: number, b: number, precision: number = 2): boo
 
 /**
  *
- * @param coords
- */
-export function currentLocationResource(coords: GeolocationCoordinates): LocationResource {
-  return {
-    country: '',
-    country_code: '',
-    country_id: generateUUID(),
-    elevation: 0,
-    feature_code: '',
-    id: "CURRENT_LOCATION",
-    latitude: coords.latitude,
-    longitude: coords.longitude,
-    name: 'My Location',
-    population: 1,
-    timezone: getTimezone(),
-  }
-}
-
-/**
- *
  * @param time
  * @param timezone
  * @param showNow
@@ -383,4 +363,46 @@ export function geoNames2Location(record: GeoNamesResource): LocationResource {
     population: record.fields.population,
     timezone: record.fields.timezone,
   };
+}
+
+/**
+ *
+ * @param a
+ * @param b
+ * @param keyFn
+ * @param comparator
+ */
+export function mergeArraysBy<T>(
+  a: T[],
+  b: T[],
+  keyFn: (element: T) => any,
+  comparator: (elementA: T, elementB: T) => boolean
+): T[] {
+  const mapA = new Map(a.map((element) => [keyFn(element), element]));
+  const mapB = new Map(b.map((element) => [keyFn(element), element]));
+  const c: T[] = [];
+
+  for (const elementA of a) {
+    const keyA = keyFn(elementA);
+
+    if (mapB.has(keyA)) {
+      if (comparator(elementA, mapB.get(keyA)!)) {
+        c.push(mapB.get(keyA)!);
+      } else {
+        c.push(elementA);
+      }
+    } else {
+      c.push(elementA);
+    }
+  }
+
+  for (const elementB of b) {
+    const keyB = keyFn(elementB);
+
+    if (!mapA.has(keyB)) {
+      c.push(elementB);
+    }
+  }
+
+  return c;
 }
