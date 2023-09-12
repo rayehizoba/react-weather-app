@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useLayoutEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {selectForecasts} from "../store/forecasts/forecasts.selectors";
 import * as forecastsActions from "../store/forecasts/forecasts.actions";
@@ -8,7 +8,7 @@ function useForecasts(locations: LocationResource[]): QueryResult<ForecastResour
   const dispatch = useDispatch();
   const data = useSelector(selectForecasts);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(forecastsActions.fetchForecasts(locations));
   }, []);
 

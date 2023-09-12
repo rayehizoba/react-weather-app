@@ -24,39 +24,39 @@ function useLocation(): LocationQueryResult {
   );
 
   useEffect(() => {
+    function getCurrentPosition() {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const currentLocation: LocationResource = {
+            country: '',
+            country_code: '',
+            country_id: '',
+            elevation: 0,
+            feature_code: '',
+            id: 'my-location',
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            name: 'My Location',
+            population: 1,
+            timezone: (
+              new Date().toLocaleString('en-US', {timeZoneName: 'short'}).split(' ').pop()
+              ?? 'auto'
+            ),
+          };
+          dispatch(locationActions.setCurrentLocation(currentLocation));
+        },
+        (error) => {
+          console.error('Error getting user geolocation:', error);
+        }
+      );
+    }
+
     if ('geolocation' in navigator) {
       getCurrentPosition();
     } else {
       console.error('Geolocation is not supported by this browser.');
     }
   }, [dispatch]);
-
-  function getCurrentPosition() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const currentLocation: LocationResource = {
-          country: '',
-          country_code: '',
-          country_id: '',
-          elevation: 0,
-          feature_code: '',
-          id: 'my-location',
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          name: 'My Location',
-          population: 1,
-          timezone: (
-            new Date().toLocaleString('en-US', {timeZoneName: 'short'}).split(' ').pop()
-            ?? 'auto'
-          ),
-        };
-        dispatch(locationActions.setCurrentLocation(currentLocation));
-      },
-      (error) => {
-        console.error('Error getting user geolocation:', error);
-      }
-    );
-  }
 
   function setData(location: LocationResource | null) {
     dispatch(locationActions.setLocation(location));
