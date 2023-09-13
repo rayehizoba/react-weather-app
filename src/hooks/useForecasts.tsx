@@ -15,7 +15,7 @@ function useForecasts(locations: LocationResource[]): QueryResult<ForecastResour
     if (!loading) {
       dispatch(forecastsActions.fetchForecasts(locations));
     }
-  }, [dispatch, locations]);
+  }, [dispatch, loading, locations]);
 
   return {data, loading, success, error};
 }
