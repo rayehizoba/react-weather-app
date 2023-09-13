@@ -11,7 +11,14 @@ import forecasts from './forecasts/forecasts.reducer';
 
 const reducers = combineReducers({
   forecast,
-  forecasts,
+  forecasts: persistReducer(
+    {
+      key: 'forecasts',
+      storage,
+      blacklist: ['fetch'],
+    },
+    forecasts,
+  ),
   location,
   locations,
   note,
@@ -21,7 +28,7 @@ const reducers = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  // blacklist: [],
+  blacklist: ['forecasts'],
   // whitelist: [],
 };
 
@@ -45,8 +52,6 @@ export const persistor = persistStore(store);
 export default store;
 
 export type RootState = ReturnType<typeof reducers>
-export type AppStore = ReturnType<typeof setupStore>
-export type AppDispatch = typeof store.dispatch
 
 export const setupStore = (preloadedState: RootState) => {
   return createStore(reducers, preloadedState, middleware);
