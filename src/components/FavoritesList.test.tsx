@@ -76,14 +76,14 @@ describe('FavoritesList', () => {
   it('displays empty state correctly', () => {
     render(<FavoritesList locations={[]} forecasts={[]}/>);
 
-    const emptyStateElement = screen.getByText('Your isFavorite locations will appear here');
+    const emptyStateElement = screen.getByText('Your favorite locations will appear here');
     expect(emptyStateElement).toBeInTheDocument();
   });
 
   it('displays isFavorite locations correctly', () => {
     render(<FavoritesList locations={mockLocations} forecasts={mockForecasts}/>);
 
-    const emptyStateElement = screen.queryByText('Your isFavorite locations will appear here');
+    const emptyStateElement = screen.queryByText('Your favorite locations will appear here');
     expect(emptyStateElement).not.toBeInTheDocument();
 
     // Iterate through isFavorite locations and perform time/temperature formatting assertions

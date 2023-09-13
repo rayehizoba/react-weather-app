@@ -4,6 +4,15 @@ Weather lookup app built using react - redux
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Credits
+
+This project was made possible with the following free API services
+
+- Free Weather and Locations API
+  - https://open-meteo.com
+- Geonames - All Cities with a population > 1000
+  - https://public.opendatasoft.com/explore/dataset/geonames-all-cities-with-a-population-1000/table/?disjunctive.cou_name_en&sort=population
+
 ## Available Scripts
 
 In the project directory, you can run:

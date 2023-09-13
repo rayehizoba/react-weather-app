@@ -23,7 +23,7 @@ function FavoritesList({className, forecasts, locations, location, onClickLocati
           aria-label="Your isFavorite locations will appear here"
           className="text-slate-400 font-medium text-center"
         >
-          Your isFavorite locations will appear here
+          Your favorite locations will appear here
         </div>
       </div>
     )

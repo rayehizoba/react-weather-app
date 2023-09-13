@@ -23,7 +23,7 @@ describe('useLocation', () => {
     wrapper = getWrapper(mockStore);
   });
 
-  it('should set isCurrent location when geolocation is available', () => {
+  it('should set current location when geolocation is available', () => {
     // Mock getCurrentPosition function
     mockGeolocation.getCurrentPosition.mockImplementation((success) => {
       const mockPosition = {
@@ -37,7 +37,7 @@ describe('useLocation', () => {
 
     const {result} = renderHook(() => useLocation(), {wrapper});
 
-    // Verify that location is set to the isCurrent location
+    // Verify that location is set to the current location
     expect(result.current.data).toEqual({
       country: '',
       country_code: '',
@@ -51,6 +51,7 @@ describe('useLocation', () => {
       population: 1,
       timezone: expect.any(String),
     });
+    expect(result.current.isCurrent).toEqual(true);
   });
 
   it('should handle geolocation error', () => {
