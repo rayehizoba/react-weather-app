@@ -20,10 +20,7 @@ function FavoriteButton({active, busy, onClick}: FavoriteButtonProps) {
         "mdi text-3xl",
         active ? 'mdi-star text-sky-300/50' : 'mdi-star-outline text-slate-400'
       )}></i>
-      <span className={classNames(
-        'text-sm text-slate-400',
-        active ? 'font-bold' : 'font-medium'
-      )}>
+      <span className={classNames('text-sm text-slate-400', active ? 'font-bold' : 'font-medium')}>
         {active ? 'Added' : 'Add'}
       </span>
     </button>

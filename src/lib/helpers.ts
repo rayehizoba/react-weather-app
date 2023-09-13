@@ -1,12 +1,5 @@
 import {FormEvent, FormEventHandler, MouseEventHandler} from "react";
-import {
-  GeoNamesResource,
-  HourlyData,
-  LocationResource,
-  NoteData,
-  NoteResource,
-  WeatherData
-} from "./types";
+import {GeoNamesResource, HourlyData, LocationResource, NoteData, NoteResource, WeatherData} from "./types";
 import moment from "moment-timezone";
 
 /**
@@ -256,7 +249,7 @@ export const stopPropagation = (fn: Function): MouseEventHandler<HTMLButtonEleme
 /**
  *
  */
-export function generateUUID() {
+function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = Math.random() * 16 | 0,
       // eslint-disable-next-line no-mixed-operators
@@ -363,46 +356,4 @@ export function geoNames2Location(record: GeoNamesResource): LocationResource {
     population: record.fields.population,
     timezone: record.fields.timezone,
   };
-}
-
-/**
- *
- * @param a
- * @param b
- * @param keyFn
- * @param comparator
- */
-export function mergeArraysBy<T>(
-  a: T[],
-  b: T[],
-  keyFn: (element: T) => any,
-  comparator: (elementA: T, elementB: T) => boolean
-): T[] {
-  const mapA = new Map(a.map((element) => [keyFn(element), element]));
-  const mapB = new Map(b.map((element) => [keyFn(element), element]));
-  const c: T[] = [];
-
-  for (const elementA of a) {
-    const keyA = keyFn(elementA);
-
-    if (mapB.has(keyA)) {
-      if (comparator(elementA, mapB.get(keyA)!)) {
-        c.push(mapB.get(keyA)!);
-      } else {
-        c.push(elementA);
-      }
-    } else {
-      c.push(elementA);
-    }
-  }
-
-  for (const elementB of b) {
-    const keyB = keyFn(elementB);
-
-    if (!mapA.has(keyB)) {
-      c.push(elementB);
-    }
-  }
-
-  return c;
 }

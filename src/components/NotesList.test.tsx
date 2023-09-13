@@ -59,7 +59,7 @@ describe('NotesList', () => {
   });
 
   it('should render empty state when no notes are provided', () => {
-    const { getByText, getByTestId } = render(
+    render(
       <NotesList
         notes={[]}
         onClickNew={() => {}}
@@ -83,7 +83,7 @@ describe('NotesList', () => {
 
   it('should call onClickNew when "New Note" button is clicked', () => {
     const onClickNew = jest.fn();
-    const { getByText } = render(
+    render(
       <NotesList
         notes={mockNotes}
         onClickNew={onClickNew}
@@ -93,7 +93,7 @@ describe('NotesList', () => {
     );
 
     // Click the "New Note" button
-    const newNoteButton = getByText('New Note');
+    const newNoteButton = screen.getByText('New Note');
     fireEvent.click(newNoteButton);
 
     // Check if onClickNew is called

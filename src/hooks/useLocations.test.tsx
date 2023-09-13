@@ -31,22 +31,21 @@ describe('useLocations', () => {
     wrapper = getWrapper(mockStore);
   });
 
-  it('should fetch 15 largest cities location note', async () => {
+  it('should fetch 15 largest cities sorted in alphabetic order', async () => {
     fetchMock.getOnce(url, mockResponseData as GeoNamesResponseData);
 
     const { result } = renderHook(() => useLocations(), { wrapper });
 
-    expect(result.current.data).toEqual([]);
     expect(result.current.loading).toBe(true);
+    expect(result.current.data).toEqual([]);
 
     await waitFor(() => {
-      const sortedLocations = mockResponseData.records
-        .map(geoNames2Location)
-        .sort((a: LocationResource, b: LocationResource) => a.name.localeCompare(b.name));
-      expect(result.current.data).toEqual(sortedLocations);
+      expect(result.current.loading).toBe(false);
     });
+    const compareFn = (a: LocationResource, b: LocationResource) => a.name.localeCompare(b.name);
+    const sortedLocations = mockResponseData.records.map(geoNames2Location).sort(compareFn);
+    expect(result.current.data).toEqual(sortedLocations);
     expect(result.current.success).toEqual(true);
-    expect(result.current.loading).toBe(false);
   });
 
   it('should handle fetch error', async () => {
@@ -54,8 +53,8 @@ describe('useLocations', () => {
 
     const { result } = renderHook(() => useLocations(), { wrapper });
 
-    expect(result.current.data).toEqual([]);
     expect(result.current.loading).toBe(true);
+    expect(result.current.data).toEqual([]);
 
     await waitFor(() => {
       expect(result.current.data).toEqual([]);

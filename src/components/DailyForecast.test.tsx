@@ -72,7 +72,7 @@ describe('DailyForecast', () => {
       expect(weekdayElement).toBeInTheDocument();
     });
 
-    // Check if "Today" label is displayed for the current day
+    // Check if "Today" label is displayed for the isCurrent day
     const todayLabel = screen.getByText('Today');
     expect(todayLabel).toBeInTheDocument();
 
@@ -92,20 +92,8 @@ describe('DailyForecast', () => {
     //   expect(tempRangeElement).toBeInTheDocument();
     // });
 
-    // // Check if location information is displayed correctly in the footer
-    // const locationFooter = getByText(
-    //   `Weather for ${mockLocation.name}, ${mockLocation.admin1}, ${mockLocation.country}`
-    // );
-    // expect(locationFooter).toBeInTheDocument();
+    // Check if location information is displayed correctly in the footer
+    const locationFooter = screen.getByText(`Weather for ${mockLocation.name}, ${mockLocation.country}`);
+    expect(locationFooter).toBeInTheDocument();
   });
-
-  // it('does not render location information if location is not provided', () => {
-  //   const { queryByText } = render(
-  //     <DailyForecast forecast={mockForecast} location={null} />
-  //   );
-  //
-  //   // Check if location information is not rendered
-  //   const locationFooter = queryByText(/Weather for/);
-  //   expect(locationFooter).toBeNull();
-  // });
 });

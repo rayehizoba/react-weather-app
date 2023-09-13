@@ -76,17 +76,17 @@ describe('FavoritesList', () => {
   it('displays empty state correctly', () => {
     render(<FavoritesList locations={[]} forecasts={[]}/>);
 
-    const emptyStateElement = screen.getByText('Your favorite locations will appear here');
+    const emptyStateElement = screen.getByText('Your isFavorite locations will appear here');
     expect(emptyStateElement).toBeInTheDocument();
   });
 
-  it('displays favorite locations correctly', () => {
+  it('displays isFavorite locations correctly', () => {
     render(<FavoritesList locations={mockLocations} forecasts={mockForecasts}/>);
 
-    const emptyStateElement = screen.queryByText('Your favorite locations will appear here');
+    const emptyStateElement = screen.queryByText('Your isFavorite locations will appear here');
     expect(emptyStateElement).not.toBeInTheDocument();
 
-    // Iterate through favorite locations and perform time/temperature formatting assertions
+    // Iterate through isFavorite locations and perform time/temperature formatting assertions
     mockLocations.forEach(async (location: LocationResource) => {
       const favoriteItemElement = screen.getByTestId(`favorites-item-${location.id}`);
       expect(favoriteItemElement).toBeInTheDocument();
@@ -99,6 +99,7 @@ describe('FavoritesList', () => {
           && areEqualFloats(each.latitude, location.latitude, 0)
           && areEqualFloats(each.longitude, location.longitude, 0);
       });
+      const forecastDaily = forecast.daily;
       const forecastHourly = forecast.hourly;
       const forecastHourlyUnits = forecast.hourly_units;
 
@@ -117,53 +118,14 @@ describe('FavoritesList', () => {
       const temperatureElement = within(favoriteItemElement).getByText(temperatureStr);
       expect(temperatureElement).toBeInTheDocument();
 
-      // const maxTemperature = forecastDaily.temperature_2m_max[0];
-      // const minTemperature = forecastDaily.temperature_2m_min[0];
-      // const tempRangeText = `${maxTemperature}°/${minTemperature}°`;
-      // const tempRangeElement = await within(favoriteItemElement).findByText((content, element) => {
-      //   return element?.textContent === tempRangeText;
-      // });
-      // expect(tempRangeElement).toBeInTheDocument();
+      const maxTemperature = forecastDaily.temperature_2m_max[0];
+      const minTemperature = forecastDaily.temperature_2m_min[0];
+      const tempRangeText = `${maxTemperature}°/${minTemperature}°`;
+      const tempRangeElement = await within(favoriteItemElement).findByText((content, element) => {
+        return element?.textContent === tempRangeText;
+      });
+      expect(tempRangeElement).toBeInTheDocument();
 
     });
   });
-
-  // it('displays current geolocation position correctly', () => {
-  //
-  //   const mockPosition: GeolocationPosition = {
-  //     // @ts-ignore
-  //     coords: {
-  //       latitude: 123,
-  //       longitude: 456,
-  //     },
-  //   };
-  //
-  //   const currentLocation = {
-  //     country: '',
-  //     country_code: '',
-  //     country_id: '',
-  //     elevation: 0,
-  //     feature_code: '',
-  //     id: "my-location",
-  //     latitude: mockPosition.coords.latitude,
-  //     longitude: mockPosition.coords.longitude,
-  //     name: 'My Location',
-  //     population: 1,
-  //     timezone: 'auto',
-  //   };
-  //
-  //   const mockGetCurrentPosition = jest.fn();
-  //   mockGetCurrentPosition.mockImplementationOnce(
-  //     (successCallback) => successCallback(mockPosition)
-  //   );
-  //
-  //   Object.defineProperty(navigator.geolocation, 'getCurrentPosition', {
-  //     value: mockGetCurrentPosition,
-  //   });
-  //
-  //   render(<FavoritesList locations={mockLocations} forecasts={mockForecasts}/>);
-  //
-  //   const currentLocationElement = screen.getByText(currentLocation.name);
-  //   expect(currentLocationElement).toBeInTheDocument();
-  // });
 });

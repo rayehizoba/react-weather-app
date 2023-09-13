@@ -2,12 +2,7 @@ import React from "react";
 import {render, within} from '@testing-library/react';
 import CurrentForecast from "./CurrentForecast";
 import {screen} from "@testing-library/react";
-import {
-  formatHourlyTime,
-  getTodayWeatherData,
-  weatherCode2MDI,
-  weatherCode2Str
-} from "../lib/helpers";
+import {formatHourlyTime, getTodayWeatherData, weatherCode2MDI, weatherCode2Str} from "../lib/helpers";
 import moment from "moment-timezone";
 import {faker} from "@faker-js/faker";
 import {ForecastResource} from "../lib/types";
@@ -63,10 +58,10 @@ describe('CurrentForecast', () => {
     expect(locationNameElement).toBeInTheDocument();
   });
 
-  it('displays current weather information correctly', async () => {
+  it('displays isCurrent weather information correctly', async () => {
     render(<CurrentForecast forecast={mockForecast} location={mockLocation}/>);
 
-    const testContainer = screen.getByTestId('current-forecast');
+    const testContainer = screen.getByTestId('isCurrent-forecast');
 
     const todayWeatherData = getTodayWeatherData(mockForecast.hourly);
     const currentWeatherData = todayWeatherData[0];

@@ -20,10 +20,10 @@ function FavoritesList({className, forecasts, locations, location, onClickLocati
       <div className="h-full grid place-content-center">
         <div
           role="note"
-          aria-label="Your favorite locations will appear here"
+          aria-label="Your isFavorite locations will appear here"
           className="text-slate-400 font-medium text-center"
         >
-          Your favorite locations will appear here
+          Your isFavorite locations will appear here
         </div>
       </div>
     )

@@ -1,12 +1,7 @@
 import {useEffect} from "react";
 import {LocationResource, QueryResult} from "../lib/types";
 import {useDispatch, useSelector} from "react-redux";
-import {
-  selectLocations,
-  selectLocationsFetch,
-  selectLocationsFetchError,
-  selectLocationsFetchSuccess
-} from "../store/locations/locations.selectors";
+import {selectLocations, selectLocationsFetch, selectLocationsFetchError, selectLocationsFetchSuccess} from "../store/locations/locations.selectors";
 import * as locationsActions from "../store/locations/locations.actions";
 
 function useLocations(): QueryResult<LocationResource[]> {

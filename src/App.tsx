@@ -33,13 +33,13 @@ function App() {
   } = useNote();
 
   const {data: locations, loading: locationsLoading, error: locationsError} = useLocations();
-  const {data: location, setData: setLocation, current, favorite, toggleFavorite} = useLocation();
+  const {data: location, setData: setLocation, isCurrent, isFavorite, toggleFavorite} = useLocation();
   const debouncedLocation = useDebounce(location, 150);
 
-  const {data: forecasts} = useForecasts(locations);
+  const {data: forecasts, loading: forecastsLoading} = useForecasts(locations);
   const {data: forecast, loading: forecastLoading, error: forecastError} = useForecast(location);
 
-  const isLoading = forecastLoading || locationsLoading;
+  const isLoading = forecastLoading || locationsLoading || forecastsLoading;
   const debouncedIsLoading = useDebounce(isLoading, 150);
   const error = forecastError ?? locationsError;
 
@@ -59,8 +59,8 @@ function App() {
   function renderHeader({onToggleSidenav, showSidenav}: PageTemplateHeaderProps) {
     return (
       <header className="flex items-stretch justify-end space-x-2.5 relative">
-        {location && !current && (
-          <FavoriteButton onClick={toggleFavorite} busy={forecastLoading} active={favorite}/>
+        {location && !isCurrent && (
+          <FavoriteButton onClick={toggleFavorite} busy={forecastLoading} active={isFavorite}/>
         )}
         <SearchInput onChange={onChangeLocation} busy={debouncedIsLoading}/>
         <button type='button' onClick={onToggleSidenav} className='lg:hidden z-10'>

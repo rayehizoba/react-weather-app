@@ -58,7 +58,7 @@ function CurrentForecast({forecast, location}: CurrentForecastProps) {
 
   return (
     <Card className=''>
-      <div data-testid='current-forecast' className="flex flex-wrap md:flex-nowrap items-center justify-between px-2">
+      <div data-testid='isCurrent-forecast' className="flex flex-wrap md:flex-nowrap items-center justify-between px-2">
         <div className="w-full md:w-auto flex items-center md:justify-between">
           <figure className='w-2/5 md:w-48 -my-6 md:mb-0 md:-mt-16'>
             <Lottie loop play animationData={weatherCode2LottieJSON(weatherCode)}/>

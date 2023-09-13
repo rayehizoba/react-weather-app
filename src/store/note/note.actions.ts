@@ -3,6 +3,7 @@ import {ActionType, NoteData, NoteResource} from "../../lib/types";
 import {Dispatch} from "redux";
 import {RootState} from "../index";
 import {selectNotes} from "../notes/notes.selectors";
+import {createNoteResource} from "../../lib/helpers";
 
 /**
  *
@@ -19,8 +20,8 @@ export const setNote = (data: null | NoteResource): any => {
  * @returns {Function}
  */
 export const createNote = (data: NoteData): any => {
-  return (dispatch: Dispatch<ActionType<NoteData>>) => {
-    dispatch({type: types.CREATE_NOTE, data});
+  return (dispatch: Dispatch<ActionType<NoteResource>>) => {
+    dispatch({type: types.CREATE_NOTE, data: createNoteResource(data)});
   }
 };
 

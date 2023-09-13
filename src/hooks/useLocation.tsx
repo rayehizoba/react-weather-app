@@ -7,8 +7,8 @@ import {LocationResource, QueryResult} from "../lib/types";
 import {RootState} from "../store";
 
 interface LocationQueryResult extends QueryResult<LocationResource | null> {
-  current: boolean,
-  favorite: boolean;
+  isCurrent: boolean,
+  isFavorite: boolean;
   toggleFavorite: () => void;
 }
 
@@ -16,10 +16,10 @@ function useLocation(): LocationQueryResult {
   const dispatch = useDispatch();
 
   const data = useSelector(selectLocation);
-  const current = useSelector((state: RootState) =>
+  const isCurrent = useSelector((state: RootState) =>
     data ? selectIsCurrentLocation(state, data.id) : false
   );
-  const favorite = useSelector((state: RootState) =>
+  const isFavorite = useSelector((state: RootState) =>
     data ? selectIsFavoriteLocation(state, data.id) : false
   );
 
@@ -65,14 +65,14 @@ function useLocation(): LocationQueryResult {
   async function toggleFavorite() {
     if (data) {
       await dispatch(
-        favorite
+        isFavorite
           ? locationActions.removeLocation(data.id)
           : locationActions.saveLocation(data)
       );
     }
   }
 
-  return {data, setData, current, favorite, toggleFavorite};
+  return {data, setData, isCurrent, isFavorite, toggleFavorite};
 }
 
 export default useLocation;

@@ -1,11 +1,4 @@
-import {
-  areEqualFloats,
-  formatDailyTime,
-  formatHourlyTime, geoNames2Location,
-  getTodayWeatherData, mergeArraysBy, objectToURLQuery,
-  weatherCode2MDI,
-  weatherCode2Str
-} from "./helpers";
+import {areEqualFloats, formatDailyTime, formatHourlyTime, geoNames2Location, getTodayWeatherData, objectToURLQuery, weatherCode2MDI, weatherCode2Str} from "./helpers";
 import moment from "moment-timezone";
 import {GeoNamesResource, LocationResource} from "./types";
 
@@ -267,46 +260,6 @@ describe('geoNames2Location', () => {
 
     const result = geoNames2Location(mockGeoNamesResource);
     expect(result).toEqual(expectedLocationResource);
-  });
-});
-
-describe("mergeArraysBy", () => {
-  it("should merge arrays based on custom key and comparator", () => {
-    interface Element {
-      name: string;
-      category: string;
-    }
-
-    const a: Element[] = [
-      { name: "A", category: "X" },
-      { name: "B", category: "Y" },
-      { name: "C", category: "Z" },
-    ];
-
-    const b: Element[] = [
-      { name: "B", category: "Y" },
-      { name: "C", category: "Z" },
-      { name: "D", category: "W" },
-    ];
-
-    const keyFn = (element: Element) => `${element.name}-${element.category}`;
-
-    const mergedArray = mergeArraysBy(
-      a,
-      b,
-      keyFn,
-      (elementA, elementB) => elementA.name === elementB.name
-    );
-
-    // The expected merged array
-    const expectedMergedArray: Element[] = [
-      { name: "A", category: "X" },
-      { name: "B", category: "Y" }, // Chosen from 'b' due to the comparator
-      { name: "C", category: "Z" }, // Chosen from 'b' due to the comparator
-      { name: "D", category: "W" }, // Added from 'b' since it's not in 'a'
-    ];
-
-    expect(mergedArray).toEqual(expectedMergedArray);
   });
 });
 

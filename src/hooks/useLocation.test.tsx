@@ -23,7 +23,7 @@ describe('useLocation', () => {
     wrapper = getWrapper(mockStore);
   });
 
-  it('should set current location when geolocation is available', () => {
+  it('should set isCurrent location when geolocation is available', () => {
     // Mock getCurrentPosition function
     mockGeolocation.getCurrentPosition.mockImplementation((success) => {
       const mockPosition = {
@@ -37,7 +37,7 @@ describe('useLocation', () => {
 
     const {result} = renderHook(() => useLocation(), {wrapper});
 
-    // Verify that location is set to the current location
+    // Verify that location is set to the isCurrent location
     expect(result.current.data).toEqual({
       country: '',
       country_code: '',
@@ -74,7 +74,7 @@ describe('useLocation', () => {
     expect(result.current.data).toBeNull();
   });
 
-  it('should toggle favorite location', async () => {
+  it('should toggle isFavorite location', async () => {
     const mockLocation = require('../mocks/location-resource-mock.json');
     const {result} = renderHook(() => useLocation(), {wrapper});
 
@@ -89,23 +89,23 @@ describe('useLocation', () => {
       expect(result.current.data).toEqual(mockLocation);
     });
 
-    // Check that favorite is initially false
-    expect(result.current.favorite).toBe(false);
+    // Check that isFavorite is initially false
+    expect(result.current.isFavorite).toBe(false);
 
-    // Toggle favorite location
+    // Toggle isFavorite location
     result.current.toggleFavorite();
 
     await waitFor(() => {
-      // Check that favorite is now true
-      expect(result.current.favorite).toBe(true);
+      // Check that isFavorite is now true
+      expect(result.current.isFavorite).toBe(true);
     });
 
-    // Toggle favorite location again
+    // Toggle isFavorite location again
     result.current.toggleFavorite();
 
     await waitFor(() => {
-      // Check that favorite is now false
-      expect(result.current.favorite).toBe(false);
+      // Check that isFavorite is now false
+      expect(result.current.isFavorite).toBe(false);
     });
   });
 });

@@ -1,6 +1,5 @@
 import {NoteResource} from "../../lib/types";
 import {types as noteTypes, Action as NoteAction} from "../note/note.reducer";
-import {createNoteResource} from "../../lib/helpers";
 
 export const types = {} as const;
 
@@ -19,7 +18,7 @@ export default function reducer(state: NotesState = initialState, action: Action
     case noteTypes.CREATE_NOTE:
       return {
         ...state,
-        collection: [...state.collection, createNoteResource(action.data)],
+        collection: [...state.collection, action.data],
       };
 
     case noteTypes.EDIT_NOTE:

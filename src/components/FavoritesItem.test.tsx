@@ -16,24 +16,6 @@ describe('FavoritesItem', () => {
     expect(favoritesItemElement).toHaveClass('before:bg-sky-200/25');
   });
 
-  // it('renders temperature and weather code correctly', () => {
-  //   const { getByText } = render(
-  //     <FavoritesListItem active={false} last={false} peerActive={false} onClick={jest.fn()} location={mockLocation} />
-  //   );
-  //
-  //   expect(getByText('22°')).toBeInTheDocument();
-  //   expect(getByText('Partly Cloudy')).toBeInTheDocument();
-  // });
-  //
-  // it('renders fallback values when startIndex is invalid', () => {
-  //   const { getByText } = render(
-  //     <FavoritesListItem active={false} last={false} peerActive={false} onClick={jest.fn()} location={mockLocation} />
-  //   );
-  //
-  //   expect(getByText('--°')).toBeInTheDocument();
-  //   expect(getByText('-')).toBeInTheDocument();
-  // });
-
   it('scrolls into view on render with active state', () => {
     const scrollIntoViewMock = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
