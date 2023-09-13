@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import classNames from "classnames";
 import {formatHourlyTime, getTodayWeatherData, weatherCode2Str} from "../lib/helpers";
 import {ForecastResource, LocationResource} from "../lib/types";
@@ -37,10 +37,11 @@ function FavoritesItem({forecast, location, isActive, isPeerActive, isLast, onCl
 
   const targetElementRef = useRef<HTMLLIElement | null>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isActive && targetElementRef.current) {
       targetElementRef.current.scrollIntoView({ block: 'center' });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
