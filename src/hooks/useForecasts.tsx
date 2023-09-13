@@ -15,7 +15,8 @@ function useForecasts(locations: LocationResource[]): QueryResult<ForecastResour
     if (!loading) {
       dispatch(forecastsActions.fetchForecasts(locations));
     }
-  }, [dispatch, loading, locations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, locations]);
 
   return {data, loading, success, error};
 }
